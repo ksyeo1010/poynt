@@ -16,7 +16,7 @@ class UserController:
 
     @staticmethod
     def get_user_points(ctx):
-        guild_id = ctx.owner.guild.id
+        guild_id = ctx.guild.id
         user = GuildService.get_user(guild_id, str(ctx.author))
         return user.points
 

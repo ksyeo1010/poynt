@@ -57,6 +57,14 @@ def main():
 
     @bot.command()
     async def bet(ctx, current_points: str, bet_amount: str):
+        # create a new predictions round collection (are we going to allow the admin to access previous results?)
+        # Add bet_amount to user's collection field
+        # Add bet_choice to user's collection field
+        # if the user's bet amount is not 0, they will not be able to use this command
+
+        # run controller to place bet amount into correct choice field of predictions round
+        # add username to the array of either choices
+
         # if str(ctx.message) == "1" or str(ctx.message) == "2":
         # Run controller to place bet amount in the current predictions round
         # if str(ctx.message) == "1":
@@ -72,7 +80,16 @@ def main():
     @bot.command()
     @commands.has_permissions(administrator=True)
     async def finish(ctx):
-        # ctx.send(f"Predictions have ended!")
+        # calculate payout multipliers based on amount of bets etc... add to collection field of predictions round
+        # await ctx.send(f"Predictions have ended!")
+        pass
+
+    @bot.command()
+    @commands.has_permissions()
+    async def payout(ctx, winning_choice):
+        # if the player's bet_choice is equal to winning_choice
+        # multiply player's bet_amount to multiplier and update the result
+        # clear all player_bet_amounts and bet_choice
         pass
 
     @bot.command()
