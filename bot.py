@@ -1,8 +1,10 @@
 import os
 import discord
-from discord.ext import commands
 import logging
+from discord.ext import commands
 from dotenv import load_dotenv
+
+from src.modules import client
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
@@ -21,6 +23,8 @@ bot = commands.Bot(command_prefix='?', intents=intents)
 
 
 def main():
+    client.connect()
+
     @bot.event
     async def on_ready():
         print('Logged in as')
