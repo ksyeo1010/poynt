@@ -1,8 +1,8 @@
-from .schema import Guild
-from src.modules.user.schema import User
+from .schemas.guild import Guild
+from .schemas.user import User
 
 
-class GuildService:
+class Service:
     @staticmethod
     def init_guild(guild_id: int):
         guild = Guild(guild_id=guild_id)
@@ -12,7 +12,7 @@ class GuildService:
     def add_user(guild_id: int, username: str):
         guild = Guild.objects.get(guild_id=guild_id)
         guild.users.create(username=username)
-        guild.users.save()
+        guild.save()
 
     @staticmethod
     def get_user(guild_id: int, username: str) -> User:
@@ -24,16 +24,14 @@ class GuildService:
     def add_round(guild_id: int, title: str):
         guild = Guild.objects.get(guild_id=guild_id)
         guild.rounds.create(title=title)
-        guild.rounds.save()
+        guild.save()
 
     @staticmethod
-    def add_choice(guild_id: int, title: str, choice: str):
-        selected_round = Guild.objects.get(
-            guild_id=guild_id,
-            rounds__title=title
-        )
-        selected_round.create(choice=choice)
-        selected_round.choices.save()
+    def add_choice(guild_id: int, title: str, description: str):
+        guild = Guild.objects.get(guild_id=guild_id)
+        selected_round = guild.rounds.get(title=title)
+        selected_round.choices.create(description=description)
+        guild.save()
 
     @staticmethod
     def add_bet(guild_id: int, title: str, description: str, username: str, amount: int):
@@ -41,10 +39,7 @@ class GuildService:
         user = guild.users.get(username=username)
         user.points -= amount
 
-        guild.objects.get(
-            rounds__title=title,
-            rounds__choices__description=description
-        ).create(
-            username=username,
-            amount=amount
-        )
+        choice = guild.rounds.get(title=title).choices.get(description=description)
+        choice.bets.create(username=username, amount=amount)
+
+        guild.save()

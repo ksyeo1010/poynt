@@ -1,23 +1,23 @@
-from src.modules.guild.service import GuildService
+from src.modules.service import Service
 
 
 class UserController:
     @staticmethod
     def add_users(ctx):
         guild_id = ctx.owner.guild.id
-        GuildService.init_guild(guild_id)
+        Service.init_guild(guild_id)
         for member in ctx.members:
-            GuildService.add_user(guild_id, str(member))
+            Service.add_user(guild_id, str(member))
 
     @staticmethod
     def add_new_user(ctx):
         guild_id = ctx.owner.guild.id
-        GuildService.add_user(guild_id, str(ctx))
+        Service.add_user(guild_id, str(ctx))
 
     @staticmethod
     def get_user_points(ctx):
         guild_id = ctx.guild.id
-        user = GuildService.get_user(guild_id, str(ctx.author))
+        user = Service.get_user(guild_id, str(ctx.author))
         return user.points
 
     @staticmethod

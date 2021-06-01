@@ -1,10 +1,10 @@
 from mongoengine import *
 
-from src.modules.user.schema import UserBet
+from .user import UserBet
 
 
 class Choice(EmbeddedDocument):
-    description = StringField(required=True, unique=True)
+    description = StringField(required=True, unique=True, sparse=True)
     bets = EmbeddedDocumentListField(UserBet, default=list)
 
     @property

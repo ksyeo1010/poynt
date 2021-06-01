@@ -1,7 +1,7 @@
 from mongoengine import *
 
-from src.modules.user.schema import User
-from src.modules.round.schema import Round
+from .user import User
+from .round import Round
 
 
 class Guild(Document):

@@ -1,10 +1,10 @@
 from mongoengine import *
 
-from src.modules.choice.schema import Choice
+from .choice import Choice
 
 
 class Round(EmbeddedDocument):
-    title = StringField(required=True, unique=True)
+    title = StringField(required=True, unique=True, sparse=True)
     choices = EmbeddedDocumentListField(Choice, default=list)
 
     @property
