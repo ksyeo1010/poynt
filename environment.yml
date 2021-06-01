@@ -1,9 +1,10 @@
 # run: conda env create -f environment.yml
-name: test-env
-channel:
+name: poynt
+channels:
   - conda-forge
 dependencies:
   - python=3.9
   - pip
+  - python-dotenv
   - pip:
     - discord
