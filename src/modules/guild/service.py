@@ -11,6 +11,7 @@ class GuildService:
     @staticmethod
     def add_user(guild_id: int, username: str):
         user = User(username=username)
+        user.save()
 
         guild = Guild.objects.get(guild_id=guild_id)
         guild.users.append(user)
