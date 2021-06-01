@@ -33,11 +33,47 @@ def main():
     @bot.event
     async def on_guild_join(ctx):
         # print(ctx.owner.guild.id)
-        UserController.add_users(ctx.members)
+        UserController.add_users(ctx)
 
     @bot.event
     async def on_member_join(member):
         UserController.add_new_user(member)
+
+    @bot.command()
+    async def points(ctx):
+        user_points = UserController.get_user_points(ctx)
+        await ctx.send("You currently have " + str(user_points))
+
+    @bot.command()
+    @commands.has_permissions(administrator=True)
+    async def predict(ctx, choice_one: str, choice_two: str):
+        # Run controller to assign choices to document
+        # GameController.option_one(str(choice_one))
+        # GameController.option_two(str(choice_two))
+        await ctx.send(f"Predictions have started!\n"
+                       f"Place your points on either choice by typing the number: \n"
+                       f"1: {choice_one}\n"
+                       f"2: {choice_two}\n")
+
+    @bot.command()
+    async def bet(ctx, current_points: str, bet_amount: str):
+        # if str(ctx.message) == "1" or str(ctx.message) == "2":
+        # Run controller to place bet amount in the current predictions round
+        # if str(ctx.message) == "1":
+        # GameController.place_points_first_option(bet_amount)
+        # else:
+        # GameController.place_points_second_option(bet_amount)
+        # Run controller to take away bet amount from user
+        # UserController.bet_points(str(ctx.author),current_points, bet_amount)
+        # else:
+        # ctx.send("that's not a correct choice, please choose between option 1 or option 2")
+        pass
+
+    @bot.command()
+    @commands.has_permissions(administrator=True)
+    async def finish(ctx):
+        # ctx.send(f"Predictions have ended!")
+        pass
 
     @bot.command()
     async def add(ctx, left: int, right: int):
