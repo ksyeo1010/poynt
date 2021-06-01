@@ -4,12 +4,12 @@ from src.modules.user.schema import User
 
 class GuildService:
     @staticmethod
-    def init_guild(guild_id: str):
+    def init_guild(guild_id: int):
         guild = Guild(guild_id=guild_id)
         guild.save()
 
     @staticmethod
-    def add_user(guild_id: str, username: str):
+    def add_user(guild_id: int, username: str):
         user = User(username=username)
 
         guild = Guild.objects.get(guild_id=guild_id)
@@ -17,7 +17,7 @@ class GuildService:
         guild.save()
 
     @staticmethod
-    def get_user(guild_id: str, username: str) -> User:
+    def get_user(guild_id: int, username: str) -> User:
         user = Guild.objects.get(guild_id=guild_id, user__username=username)
         return user
 
