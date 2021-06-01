@@ -8,6 +8,6 @@ def connect():
         username=os.getenv('DB_USERNAME'),
         password=os.getenv('DB_PASSWORD'),
         host=os.getenv('DB_HOST'),
-        port=os.getenv('DB_PORT'),
+        port=int(os.getenv('DB_PORT')),
         authentication_source='admin'
     )

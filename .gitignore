@@ -7,3 +7,6 @@ discord.log
 
 # db
 db
+
+# python
+**__pycache__**
