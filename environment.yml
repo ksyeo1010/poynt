@@ -1,7 +1,9 @@
-# run: conda env create --file environment.yml
+# run: conda env create -f environment.yml
 name: test-env
 channel:
   - conda-forge
 dependencies:
   - python=3.9
-  - discord
+  - pip
+  - pip:
+    - discord
