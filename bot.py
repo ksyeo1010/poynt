@@ -41,55 +41,67 @@ def main():
 
     @bot.command()
     async def points(ctx):
+        """Checks how many points you have right now"""
         user_points = UserController.get_user_points(ctx)
         await ctx.send("You currently have " + str(user_points))
 
     @bot.command()
     @commands.has_permissions(administrator=True)
-    async def predict(ctx, choice_one: str, choice_two: str):
-        # Run controller to assign choices to document
-        # GameController.option_one(str(choice_one))
-        # GameController.option_two(str(choice_two))
+    async def predict(ctx, round_title: str, *args):
+        """$predict <round_title> <options> ... <options>"""
+        UserController.add_round(ctx, round_title)
+        for choice in args:
+            UserController.add_choice(ctx, round_title, choice)
         await ctx.send(f"Predictions have started!\n"
-                       f"Place your points on either choice by typing the number: \n"
-                       f"1: {choice_one}\n"
-                       f"2: {choice_two}\n")
+                       f"Place your points on either choice by typing "
+                       f"$bet <round_title> <option_name> <bet_amount>: \n")
+        counter = 0
+        for choice in args:
+            counter += 1
+            message = UserController.print_predictions(choice, counter)
+            await ctx.send(message)
 
     @bot.command()
-    async def bet(ctx, current_points: str, bet_amount: str):
-        # create a new predictions round collection (are we going to allow the admin to access previous results?)
-        # Add bet_amount to user's collection field
-        # Add bet_choice to user's collection field
-        # if the user's bet amount is not 0, they will not be able to use this command
+    async def bet(ctx, round_title: str, bet_choice: str, bet_amount: int):
+        """$bet <round_title> <option_name> <bet_amount>"""
+        user_points = UserController.get_user_points(ctx)
+        if user_points < bet_amount:
+            await ctx.send("You dont have enough points")
+        else:
+            UserController.bet_points(ctx, round_title, bet_choice, str(ctx.message.author), bet_amount)
 
-        # run controller to place bet amount into correct choice field of predictions round
-        # add username to the array of either choices
-
-        # if str(ctx.message) == "1" or str(ctx.message) == "2":
-        # Run controller to place bet amount in the current predictions round
-        # if str(ctx.message) == "1":
-        # GameController.place_points_first_option(bet_amount)
-        # else:
-        # GameController.place_points_second_option(bet_amount)
-        # Run controller to take away bet amount from user
-        # UserController.bet_points(str(ctx.author),current_points, bet_amount)
-        # else:
-        # ctx.send("that's not a correct choice, please choose between option 1 or option 2")
+    @bot.command()
+    async def multiplier(ctx, round_title: str, amount: int):
+        """Return the multiplier for each option for the round"""
+        # await ctx.send("This is the current multiplier for each choice!")
+        # for each in range(1, RoundController.get_total_choices() + 1):
+        #   for round in RoundController.get_round(ctx, round_title, each)
+        #       multiplier = RoundController.get_multiplier(ctx, round_title, winning_choice)
+        #       await ctx.send(f"The multiplier for option {each} is {multiplier}. "
+        #                      f"This means if you bet {amount} points, you'll get back {amount * multiplier} plus the "
+        #                      f"original bet amount of {amount}, with the total of {(amount * multiplier) + amount}")
         pass
 
     @bot.command()
     @commands.has_permissions(administrator=True)
-    async def finish(ctx):
-        # calculate payout multipliers based on amount of bets etc... add to collection field of predictions round
-        # await ctx.send(f"Predictions have ended!")
+    async def payout(ctx, round_title: str, winning_choice: str):
+        """$payout <round_title> <winning_choice>"""
+        # winner_list = RoundController.get_round(ctx, round_title, winning_choice)
+        # multiplier = RoundController.get_multiplier(ctx, round_title, winning_choice)
+        # for player in winner_list:
+        #   winnings = (player.bet_amount * multiplier) + player.bet_amount
+        #    UserController.update_points(ctx, winnings)
+        # await ctx.send("All the points have been distributed!")
+        # RoundController.delete_round(ctx, round_id)
         pass
 
     @bot.command()
-    @commands.has_permissions()
-    async def payout(ctx, winning_choice):
-        # if the player's bet_choice is equal to winning_choice
-        # multiply player's bet_amount to multiplier and update the result
-        # clear all player_bet_amounts and bet_choice
+    async def ranking(ctx):
+        # users = vars(UserController.get_all_users(ctx))
+        #
+        #
+        # for user in range(len(users)):
+        #
         pass
 
     @bot.command()

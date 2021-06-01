@@ -21,7 +21,20 @@ class UserController:
         return user.points
 
     @staticmethod
-    def bet_points(member, current_points, bet_amount):
-        # new_amount = current_points - bet_amount
-        # run update user point amount
-        pass
+    def bet_points(ctx, title, bet_choice, username, amount):
+        guild_id = ctx.guild.id
+        Service.add_bet(guild_id, title, bet_choice, username, amount)
+
+    @staticmethod
+    def add_round(ctx, round_title):
+        guild_id = ctx.guild.id
+        Service.add_round(guild_id, round_title)
+
+    @staticmethod
+    def add_choice(ctx, round_title, choice):
+        guild_id = ctx.guild.id
+        Service.add_choice(guild_id, round_title, choice)
+
+    @staticmethod
+    def print_predictions(choice, counter):
+        return f"{counter}: {choice}"
