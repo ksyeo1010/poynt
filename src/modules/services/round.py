@@ -1,4 +1,4 @@
-from src.modules.schemas import UserBet, Round, Choice
+from src.modules.schemas import UserBet, Round, Choice, ChoiceTotal
 from src.modules.client import Client
 
 
@@ -128,8 +128,8 @@ class RoundService:
 
         :param guild_id: the id to identify db.
         :param title: the title to identify round.
-        :return: a list of dictionaries.
-                 [UserBet(username, amount)]
+        :return: a list of ChoiceTotal.
+                 [ChoiceTotal(option, total)]
         """
         pipeline = [
             {'$match': {'title': title}},
@@ -147,7 +147,7 @@ class RoundService:
         col = Client().get_collection(guild_id, 'rounds')
         res = col.aggregate(pipeline)
 
-        return list(map(lambda u: UserBet(u['username'], u['total']), list(res)))
+        return list(map(lambda u: ChoiceTotal(u['option'], u['total']), list(res)))
 
     @staticmethod
     def get_round_bets(guild_id: id, title: str, option: str) -> list:
