@@ -5,7 +5,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 
 from src.modules.client import Client
-from src.controllers.user_controller import UserController
+from src.controllers import CommonController, RoundController, UserController
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
@@ -34,6 +34,7 @@ def main():
     @bot.event
     async def on_guild_join(ctx):
         # print(ctx.owner.guild.id)
+        CommonController.initiate_guild(ctx)
         UserController.add_users(ctx)
 
     @bot.event
@@ -48,34 +49,41 @@ def main():
 
     @bot.command(name="predict")
     @commands.has_permissions(administrator=True)
-    async def _predict(ctx, round_title: str, *args):
+    async def predict(ctx, round_title: str, *args):
         """$predict <round_title> <options> ... <options>"""
-        UserController.add_round(ctx, round_title)
-        for choice in args:
-            UserController.add_choice(ctx, round_title, choice)
-        await ctx.send(f"Predictions have started!\n"
-                       f"Place your points on either choice by typing "
-                       f"$bet <round_title> <option_name> <bet_amount>: \n")
-        counter = 0
-        for choice in args:
-            counter += 1
-            message = UserController.print_predictions(choice, counter)
-            await ctx.send(message)
+        if len(args) > 2:
+            RoundController.add_round(ctx, round_title)
+            for choice in args:
+                RoundController.add_choice(ctx, round_title, choice)
+            ctx.send(f"Predictions have started!\n"
+                     f"Place your points on either choice by typing "
+                     f"$bet <round_title> <option_name> <bet_amount>: \n")
+            counter = 0
+            for choice in args:
+                counter += 1
+                message = RoundController.print_predictions(choice, counter)
+                await ctx.send(message)
+        else:
+            await ctx.send("You have to put in at least two options")
+            return
 
-    @_predict.error
+    @predict.error
     async def predict_error(ctx, error):
         # move this to a UserController.no_permission_error
         if isinstance(error, commands.MissingPermissions):
             await ctx.send(f"Sorry {ctx.message.author}, you are not an admin!")
 
+
     @bot.command()
     async def bet(ctx, round_title: str, bet_choice: str, bet_amount: int):
         """$bet <round_title> <option_name> <bet_amount>"""
-        user_points = UserController.get_user_points(ctx)
-        if user_points < bet_amount:
+        UserController.decrement_user_points(ctx, str(ctx.message.author), bet_amount)
+        RoundController.place_user_bet(ctx, round_title, bet_choice, str(ctx.message.author), bet_amount)
+
+    @bet.error
+    async def bet_error(ctx, error):
+        if isinstance(error, commands.CommandInvokeError):
             await ctx.send("You dont have enough points")
-        else:
-            UserController.bet_points(ctx, round_title, bet_choice, str(ctx.message.author), bet_amount)
 
     @bot.command()
     async def activerounds(ctx):
@@ -92,24 +100,31 @@ def main():
 
     @bot.command(name="payout")
     @commands.has_permissions(administrator=True)
-    async def _payout(ctx, round_title: str, winning_choice: str):
+    async def payout(ctx, round_title: str, winning_choice: str):
         """$payout <round_title> <winning_choice>"""
+        list_of_dict = RoundController.get_options(ctx, round_title)
+        total_bets = RoundController.get_round_bets(list_of_dict)
+        winning_option = RoundController.get_winning_option(list_of_dict, winning_choice)
+        option_multiplier = RoundController.get_option_multiplier(winning_option, total_bets)
+        print(option_multiplier)
+
+
         # multiplier = UserController.multiplier(ctx, round_title)
         # UserController.payout_round(ctx, round_title, winning_choice)
         # winner_list = RoundController.get_winners(ctx, round_title, winning_choice)
         # await ctx.send(winner_list)
         # UserController.delete_round(ctx, round_title)
+
         pass
 
-    @_payout.error
+    @payout.error
     async def payout_error(ctx, error):
-        # move this to a UserController.no_permission_error
         if isinstance(error, commands.MissingPermissions):
             await ctx.send(f"Sorry {ctx.message.author}, you are not an admin!")
 
     @bot.command(name="goodbyepoynt")
     @commands.has_permissions(administrator=True)
-    async def _goodbyepoynt(ctx):
+    async def goodbyepoynt(ctx):
         # move code below to a UserController and call controller instead
         # await ctx.send(f"Are you sure you would kick poynt?\n"
         #                f"This will remove all data stored up to this point.\n"
@@ -129,12 +144,10 @@ def main():
         #     await ctx.send(f"That's not a valid input, run the command again!")
         pass
 
-    @_goodbyepoynt.error
+    @goodbyepoynt.error
     async def goodbyepoynt_error(ctx, error):
-        # move this to a UserController.no_permission_error
         if isinstance(error, commands.MissingPermissions):
             await ctx.send(f"Sorry {ctx.message.author}, you are not an admin!")
-
 
     @bot.command()
     async def ranking(ctx, category: str):
@@ -188,7 +201,6 @@ def main():
 
     @_shopadd.error
     async def shopadd_error(ctx, error):
-        # move this to a UserController.no_permission_error
         if isinstance(error, commands.MissingPermissions):
             await ctx.send(f"Sorry {ctx.message.author}, you are not an admin!")
 
