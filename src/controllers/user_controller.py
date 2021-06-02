@@ -23,7 +23,22 @@ class UserController:
     @staticmethod
     def decrement_user_points(ctx, username, amount):
         guild_id = ctx.guild.id
-        UserService.decrement_bet(guild_id, username, amount)
+        # UserService.decrement_bet(guild_id, username, amount)
+        RoundService.add_bet(guild_id, title, bet_choice, username, amount)
+
+    @staticmethod
+    def add_round(ctx, round_title):
+        guild_id = ctx.guild.id
+        RoundService.add_round(guild_id, round_title)
+
+    @staticmethod
+    def add_choice(ctx, round_title, choice):
+        guild_id = ctx.guild.id
+        RoundService.add_choice(guild_id, round_title, choice)
+
+    @staticmethod
+    def print_predictions(choice, counter):
+        return f"{counter}: {choice}"
 
     # @staticmethod
     # def payout_round(ctx, round_title, winning_choice):
@@ -31,4 +46,9 @@ class UserController:
     # @staticmethod
     # def multiplier(ctx, round_title):
     #     return RoundService.get_total_bets(ctx.guild.id, round_title)
+
+    @staticmethod
+    def multiplier(ctx, round_title):
+        return RoundService.get_round_bets(ctx.guild.id, round_title, 'one')
+        # UserService.increment_bets(ctx.guild.id)
 
