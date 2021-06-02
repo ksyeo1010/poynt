@@ -10,9 +10,11 @@ class User:
     """The User class in a guild.
 
     :username: a string representing the username of a user.
+    :privilege: an integer representing the privilege of a user.
     :points: an integer representing the total amount of points of a user.
     """
     username: str
+    privilege: Optional[int] = field(default=None)
     points: Optional[int] = field(default=500)
 
     @property
@@ -36,6 +38,11 @@ class User:
                         'username': {
                             'bsonType': 'string',
                             'description': 'must be a string and is required'
+                        },
+                        'privilege': {
+                            'bsonType': 'int',
+                            'minimum': 0,
+                            'description': 'must be an integer greater than 0'
                         },
                         'points': {
                             'bsonType': 'int',

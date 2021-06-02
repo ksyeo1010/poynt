@@ -18,7 +18,7 @@ class RoundService:
         col.insert_one(new_round.to_dict)
 
     @staticmethod
-    def check_round(guild_id: int, title: str):
+    def check_round(guild_id: int, title: str) -> bool:
         """Checks if the round is currently running.
 
         :param guild_id: the guild_id identifier.
@@ -29,6 +29,17 @@ class RoundService:
         res = col.find_one({'title': title})
 
         return res["running"]
+
+    @staticmethod
+    def delete_round(guild_id: int, title: str):
+        """Delete a round given the title.
+
+        :param guild_id: the guild_id identifier.
+        :param title: he unique title to add to.
+        :return: None.
+        """
+        col = Client().get_collection(guild_id, 'rounds')
+        col.find_one_and_delete({'title': title})
 
     @staticmethod
     def set_round_state(guild_id: int, title: str, is_running=False):
@@ -117,7 +128,8 @@ class RoundService:
 
         :param guild_id: the id to identify db.
         :param title: the title to identify round.
-        :return: a list of dictionaries: {_id: <option>, total: <total_amount>}
+        :return: a list of dictionaries.
+                 [UserBet(username, amount)]
         """
         pipeline = [
             {'$match': {'title': title}},
@@ -135,7 +147,7 @@ class RoundService:
         col = Client().get_collection(guild_id, 'rounds')
         res = col.aggregate(pipeline)
 
-        return list(res)
+        return list(map(lambda u: UserBet(u['username'], u['total']), list(res)))
 
     @staticmethod
     def get_round_bets(guild_id: id, title: str, option: str) -> list:
@@ -144,8 +156,8 @@ class RoundService:
         :param guild_id: the id to identify db.
         :param title: the title to identify round.
         :param option: the winning choice of a round.
-        :return: a list of dictionaries containing user and total amount bet.
-                 [{_id: <username>, total: <total_amount>}]
+        :return: a list of dictionaries containing UserBet.
+                 [UserBet(username, amount)]
         """
         pipeline = [
             {'$match': {'title': title}},
@@ -161,4 +173,4 @@ class RoundService:
         col = Client().get_collection(guild_id, 'rounds')
         res = col.aggregate(pipeline)
 
-        return list(res)
+        return list(map(lambda u: UserBet(u['username'], u['total']), list(res)))

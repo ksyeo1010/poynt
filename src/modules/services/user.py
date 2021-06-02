@@ -57,9 +57,26 @@ class UserService:
 
         :param guild_id: the id to identify the db.
         :param num_users: total number of users to get.
-        :return: list of users. [{username: <username>, points: <points>}]
+        :return: list of users.
+                 [User(username, points)]
         """
         col = Client().get_collection(guild_id, 'users')
         res = col.find({}, {'_id': False}).sort({'points': 1}).limit(num_users)
 
-        return list(res)
+        return list(map(lambda u: User(u['_id'], u['points']), list(res)))
+
+    @staticmethod
+    def set_role(guild_id: int, username: str, privilege: int):
+        """Sets the role of a user given the privilege.
+
+        :param guild_id: the id to identify the db.
+        :param username: the username to set the privilege.
+        :param privilege: the privilege to set.
+        :return: None.
+        """
+        col = Client().get_collection(guild_id, 'users')
+        col.find_one_and_update({
+            'username': username
+        }, {
+            'privilege': privilege
+        })
