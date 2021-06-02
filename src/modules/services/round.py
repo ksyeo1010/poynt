@@ -18,6 +18,35 @@ class RoundService:
         col.insert_one(new_round.to_dict)
 
     @staticmethod
+    def check_round(guild_id: int, title: str):
+        """Checks if the round is currently running.
+
+        :param guild_id: the guild_id identifier.
+        :param title: he unique title to add to.
+        :return: true if the round is running, false otherwise.
+        """
+        col = Client().get_collection(guild_id, 'rounds')
+        res = col.find_one({'title': title})
+
+        return res.running
+
+    @staticmethod
+    def set_round_state(guild_id: int, title: str, is_running=False):
+        """Set the round state to start or stop.
+
+        :param guild_id: the guild_id identifier.
+        :param title: the unique title to add to.
+        :param is_running: true to set the round to start, false otherwise.
+        :return: None.
+        """
+        col = Client().get_collection(guild_id, 'rounds')
+        col.find_one_and_update({
+            'title': title
+        }, {
+            'running': is_running
+        })
+
+    @staticmethod
     def add_choice(guild_id: int, title: str, option: str):
         """Adds a choice to a given round.
 
@@ -38,6 +67,26 @@ class RoundService:
         })
 
     @staticmethod
+    def set_choice_state(guild_id: int, title: str, option: str, is_winner=True):
+        """Sets the winner state of a choice in round.
+
+        :param guild_id: th guild_id to identify db.
+        :param title: the title to identify round.
+        :param option: the option to add to round.
+        :param is_winner: a boolean representing the winner state.
+        :return: None.
+        """
+        col = Client().get_collection(guild_id, 'rounds')
+        col.find_one_and_update({
+            '$and': [
+                {'title': title},
+                {'choices.option': option}
+            ]
+        }, {
+            {'choices.$.winner': is_winner}
+        })
+
+    @staticmethod
     def add_bet(guild_id: int, title: str, option: str, username: str, amount: int):
         """ Adds a bet to a option of a round.
 
@@ -50,8 +99,8 @@ class RoundService:
         """
         bet = UserBet(username=username, amount=amount)
 
-        round_col = Client().get_collection(guild_id, 'rounds')
-        round_col.update({
+        col = Client().get_collection(guild_id, 'rounds')
+        col.update({
             'title': title,
             'choices.option': option
         }, {
@@ -81,8 +130,8 @@ class RoundService:
             }}
         ]
 
-        round_col = Client().get_collection(guild_id, 'rounds')
-        res = round_col.aggregate(pipeline)
+        col = Client().get_collection(guild_id, 'rounds')
+        res = col.aggregate(pipeline)
 
         return list(res)
 
@@ -107,7 +156,7 @@ class RoundService:
             }}
         ]
 
-        round_col = Client().get_collection(guild_id, 'rounds')
-        res = round_col.aggregate(pipeline)
+        col = Client().get_collection(guild_id, 'rounds')
+        res = col.aggregate(pipeline)
 
         return list(res)

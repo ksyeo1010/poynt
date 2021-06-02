@@ -42,11 +42,24 @@ class UserService:
         if is_decrement:
             amount *= -1
 
-        user_col = Client().get_collection(guild_id, 'users')
-        user_col.update({
+        col = Client().get_collection(guild_id, 'users')
+        col.update({
             'username': username
         }, {
             '$inc': {
                 'points': amount
             }
         })
+
+    @staticmethod
+    def get_rank(guild_id: int, num_users=10) -> list:
+        """Gets the top point holders in the guild.
+
+        :param guild_id: the id to identify the db.
+        :param num_users: total number of users to get.
+        :return: list of users. [{username: <username>, points: <points>}]
+        """
+        col = Client().get_collection(guild_id, 'users')
+        res = col.find({}, {'_id': False}).sort({'points': 1}).limit(num_users)
+
+        return list(res)

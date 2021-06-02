@@ -9,9 +9,11 @@ class Choice:
     """The choice dataclass.
 
     option: the option name of choice.
+    winner: a boolean representing if the choice is a winner.
     bets: a list of bets made by users.
     """
     option: str
+    winner: bool = field(default=False)
     bets: List[UserBet] = field(default_factory=lambda: [])
 
     @property
@@ -31,11 +33,15 @@ class Choice:
             'additionalProperties': False,
             'items': {
                 'bsonType': 'object',
-                'required': ['option'],
+                'required': ['option', 'winner'],
                 'properties': {
                     'option': {
                         'bsonType': 'string',
                         'description': 'must be a string and is required'
+                    },
+                    'winner': {
+                        'bsonType': 'boolean',
+                        'description': 'must be a boolean and is required'
                     },
                     'bets': UserBet.get_sub_validator()
                 }
