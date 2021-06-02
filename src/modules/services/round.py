@@ -146,8 +146,9 @@ class RoundService:
 
         col = Client().get_collection(guild_id, 'rounds')
         res = col.aggregate(pipeline)
+        res = list(res)
 
-        return list(map(lambda u: ChoiceTotal(u['option'], u['total']), list(res)))
+        return list(map(lambda u: ChoiceTotal(u['_id'], u['total']), res))
 
     @staticmethod
     def get_round_bets(guild_id: id, title: str, option: str) -> list:
@@ -172,5 +173,6 @@ class RoundService:
 
         col = Client().get_collection(guild_id, 'rounds')
         res = col.aggregate(pipeline)
+        res = list(res)
 
-        return list(map(lambda u: UserBet(u['username'], u['total']), list(res)))
+        return list(map(lambda u: UserBet(u['_id'], u['total']), res))

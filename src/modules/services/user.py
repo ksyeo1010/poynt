@@ -61,9 +61,10 @@ class UserService:
                  [User(username, points)]
         """
         col = Client().get_collection(guild_id, 'users')
-        res = col.find({}, {'_id': False}).sort({'points': 1}).limit(num_users)
+        res = col.find({}, {'_id': False}).sort([('points', -1)]).limit(num_users)
+        res = list(res)
 
-        return list(map(lambda u: User(u['_id'], u['points']), list(res)))
+        return list(map(lambda u: User(u['username'], u['points'], u['privilege']), res))
 
     @staticmethod
     def set_role(guild_id: int, username: str, privilege: int):

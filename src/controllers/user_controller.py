@@ -24,3 +24,17 @@ class UserController:
     def update_user_points(ctx, username, amount, is_decrement):
         guild_id = ctx.guild.id
         UserService.update_bet(guild_id, username, amount, is_decrement)
+
+    @staticmethod
+    def get_ranking(ctx):
+        guild_id = ctx.guild.id
+        result = UserService.get_rank(guild_id)
+        list_of_strings = []
+        count = 0
+        for user in result:
+            count += 1
+            name = user.username
+            points = user.points
+            string = f"{count}. {name}: {points} points."
+            list_of_strings.append(string)
+        return '\n'.join(list_of_strings)

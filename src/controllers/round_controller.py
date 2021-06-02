@@ -38,7 +38,7 @@ class RoundController:
         result = RoundService.get_total_bets(guild_id, round_title)
         pair_list = []
         for option in result:
-            pair = f"'{option['_id']}' currently has {option['total']} points in the pool!"
+            pair = f"'{option.option}' currently has {option.total} points in the pool!"
             pair_list.append(pair)
         options_string = '\n'.join(pair_list)
         return options_string
@@ -63,11 +63,11 @@ class RoundController:
         list_strings = []
         total_bets = 0
         for option in list_of_options:
-            option_bet = option["total"]
+            option_bet = option.total
             total_bets += option_bet
         for option in list_of_options:
-            check_multiplier_option = option["_id"]
-            option_multiplier = round(1 + (((total_bets + money) - (option["total"] + money)) / (total_bets + money)))
+            check_multiplier_option = option.username
+            option_multiplier = round(1 + (((total_bets + money) - (option.total + money)) / (total_bets + money)))
             apply_multiplier = option_multiplier * money
             list_strings.append(f"If you bet {money} points on '{check_multiplier_option}' right now, you can get "
                                 f"{apply_multiplier} points if you win!")
@@ -85,10 +85,10 @@ class RoundController:
         list_of_options = RoundService.get_total_bets(guild_id, round_title)
         total_bets = 0
         for option in list_of_options:
-            option_bet = option["total"]
+            option_bet = option.total
             total_bets += option_bet
         win_option = RoundService.get_round_bets(guild_id, round_title, winning_choice)
-        return round(1 + ((total_bets - win_option[0]["total"]) / total_bets))
+        return round(1 + ((total_bets - win_option[0].amount) / total_bets))
 
     @staticmethod
     def get_winning_option(ctx, round_title, winning_choice):
@@ -98,5 +98,5 @@ class RoundController:
 
     @staticmethod
     def apply_multiplier(winner, multiplier):
-        winner["total"] *= multiplier
+        winner.amount *= multiplier
         return winner

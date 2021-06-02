@@ -73,8 +73,16 @@ def main():
             msg = await ctx.send(embed=embed)
             await asyncio.sleep(2.5)
             await msg.delete()
+        if isinstance(error, commands.CommandNotFound):
+            embed.title = f"Command Error!"
+            embed.description = "There's no commanded named that!"
+            await ctx.message.delete()
+            msg = await ctx.send(embed=embed)
+            await asyncio.sleep(2.5)
+            await msg.delete()
 
     @bot.command()
+    @commands.cooldown(1, 15, commands.BucketType.user)
     async def points(ctx):
         """Checks how many points you have right now"""
         embed = discord.Embed(color=0x00ff00)
@@ -103,14 +111,12 @@ def main():
             embed = discord.Embed(color=0x00ff00)
             embed.title = "Predict Round Initiated!"
             options_string = '\n'.join(options_list)
-            general_message = (f"Predictions have started!\n"
+            general_message = (f"Predictions have started for {round_title}!\n"
                                f"Place your points on either choice by typing "
                                f"$bet <round_title> <option_name> <bet_amount>: \n")
             embed.description = general_message + options_string
             await ctx.message.delete()
-            msg = await ctx.send(embed=embed)
-            await asyncio.sleep(2.5)
-            await msg.delete()
+            await ctx.send(embed=embed)
         else:
             embed = discord.Embed(color=0xff0000)
             embed.title = "Prediction Command Error!"
@@ -129,6 +135,7 @@ def main():
     #         await ctx.send(embed=embed)
 
     @bot.command()
+    @commands.has_permissions(administrator=True)
     async def endpredict(ctx, round_title):
         RoundController.change_prediction_status(ctx, round_title, False)
         embed = discord.Embed(color=0xff0000)
@@ -136,11 +143,10 @@ def main():
         embed.description = f"Betting has now concluded for {round_title}.\n" \
                             f"In order to initiate betting once more, please contact an admin."
         await ctx.message.delete()
-        msg = await ctx.send(embed=embed)
-        await asyncio.sleep(2.5)
-        await msg.delete()
+        await ctx.send(embed=embed)
 
     @bot.command()
+    @commands.has_permissions(administrator=True)
     async def startpredict(ctx, round_title):
         RoundController.change_prediction_status(ctx, round_title, True)
         embed = discord.Embed(color=0x00ff00)
@@ -149,17 +155,16 @@ def main():
                             f"For more support in placing a bet, type command '$help bet' for more information.\n" \
                             f"Bet away!"
         await ctx.message.delete()
-        msg = await ctx.send(embed=embed)
-        await asyncio.sleep(2.5)
-        await msg.delete()
+        await ctx.send(embed=embed)
 
     @bot.command(name="postprediction")
     @commands.cooldown(1, 15, commands.BucketType.user)
     async def postprediction(ctx, round_title):
         result = RoundController.post_predictions(ctx, round_title)
         embed = discord.Embed(color=0x00ff00)
-        # embed.title = f"{round_title} Status"
-        embed.add_field(name=f"Round: {round_title}", value=result, inline=False)
+        embed.title = f"{round_title} Status"
+        embed.description = result
+        # embed.add_field(name=f"Round: {round_title}", value=result, inline=False)
         # user = bot.get_user(ctx.author.id)
         await ctx.message.delete()
         await ctx.send(embed=embed)
@@ -214,6 +219,7 @@ def main():
         pass
 
     @bot.command(name="multiplier")
+    @commands.cooldown(1, 15, commands.BucketType.user)
     async def multiplier(ctx, round_title: str, money: int):
         """Return the multiplier for each option for the round"""
         multiplier_message = RoundController.multiplier_total_pool(ctx, round_title, money)
@@ -245,7 +251,7 @@ def main():
         winning_option = RoundController.get_winning_option(ctx, round_title, winning_choice)
         for winner in winning_option:
             winner = RoundController.apply_multiplier(winner, option_multiplier)
-            UserController.update_user_points(ctx, winner["_id"], winner["total"], False)
+            UserController.update_user_points(ctx, winner.username, winner.amount, False)
         embed = discord.Embed(color=0x00ff00)
         embed.title = "Prediction Round Over!"
         embed.description = "Everything has been allocated!"
@@ -290,12 +296,17 @@ def main():
     #         await ctx.send(f"Sorry {ctx.message.author}, you are not an admin!")
 
     @bot.command()
-    async def ranking(ctx, category: str):
-        # category will be wins, losses, or points
-        # controller will return the list of ranked players for a category
-        # result = UserController.get_ranking(ctx, category)
-        # await ctx.send(result)
-        pass
+    @commands.cooldown(1, 15, commands.BucketType.user)
+    async def ranking(ctx):
+        result = UserController.get_ranking(ctx)
+        embed = discord.Embed(color=0x00ff00)
+        embed.title = "Ranking!"
+        embed.description = f"{result}"
+        await ctx.message.delete()
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(5)
+        await msg.delete()
+
 
     @bot.command()
     async def shop(ctx):

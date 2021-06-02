@@ -10,12 +10,12 @@ class User:
     """The User class in a guild.
 
     :username: a string representing the username of a user.
-    :privilege: an integer representing the privilege of a user.
     :points: an integer representing the total amount of points of a user.
+    :privilege: an integer representing the privilege of a user.
     """
     username: str
-    privilege: Optional[int] = field(default=None)
     points: Optional[int] = field(default=500)
+    privilege: Optional[int] = field(default=0)
 
     @property
     def to_dict(self):
@@ -29,7 +29,7 @@ class User:
         :return: a dictionary containing bson properties.
         """
         return Common(
-            unique_index=[('username', pymongo.ASCENDING)],
+            unique_index=[('username', pymongo.DESCENDING)],
             schema={
                 '$jsonSchema': {
                     'bsonType': 'object',
@@ -39,12 +39,12 @@ class User:
                             'bsonType': 'string',
                             'description': 'must be a string and is required'
                         },
-                        'privilege': {
+                        'points': {
                             'bsonType': 'int',
                             'minimum': 0,
                             'description': 'must be an integer greater than 0'
                         },
-                        'points': {
+                        'privilege': {
                             'bsonType': 'int',
                             'minimum': 0,
                             'description': 'must be an integer greater than 0'
