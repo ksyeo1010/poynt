@@ -24,7 +24,7 @@ class UserController:
     @staticmethod
     def bet_points(ctx, title, bet_choice, username, amount):
         guild_id = ctx.guild.id
-        UserService.decrement_bet(guild_id, username, amount)
+        # UserService.decrement_bet(guild_id, username, amount)
         RoundService.add_bet(guild_id, title, bet_choice, username, amount)
 
     @staticmethod
@@ -46,4 +46,6 @@ class UserController:
 
     @staticmethod
     def multiplier(ctx, round_title):
-        return RoundService.get_total_bets(ctx.guild.id, round_title)
+        return RoundService.get_round_bets(ctx.guild.id, round_title, 'one')
+        # UserService.increment_bets(ctx.guild.id)
+        return 'done'

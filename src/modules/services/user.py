@@ -27,22 +27,26 @@ class UserService:
         """
         col = Client().get_collection(guild_id, 'users')
         user = col.find_one({'username': username}, {'_id': False})
-        return User(user)
+        return User(**user)
 
     @staticmethod
-    def decrement_bet(guild_id: int, username: str, amount: int):
+    def update_bet(guild_id: int, username: str, amount: int, is_decrement: False):
         """Decrements the points of a user given the amount.
 
         :param guild_id: the id to identify the db.
         :param username: the username to decrement the points from.
         :param amount: the amount to decrement.
+        :param is_decrement: decrement if true, increments otherwise.
         :return: None.
         """
+        if is_decrement:
+            amount *= -1
+
         user_col = Client().get_collection(guild_id, 'users')
         user_col.update({
             'username': username
         }, {
             '$inc': {
-                'points': -amount
+                'points': amount
             }
         })

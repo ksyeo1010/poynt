@@ -83,11 +83,11 @@ def main():
         pass
 
     @bot.command()
-    async def multiplier(ctx, round_title: str, amount: int):
+    async def multiplier(ctx, round_title: str):
         """Return the multiplier for each option for the round"""
-        # await ctx.send("This is the current multiplier for each choice!")
-        # multiplier_message = UserController.multipliers_for_round(ctx, round_title, amount)
-        # await ctx.send(multiplier_message)
+        await ctx.send("This is the current multiplier for each choice!")
+        multiplier_message = UserController.multiplier(ctx, round_title)
+        await ctx.send(multiplier_message)
         pass
 
     @bot.command(name="payout")
