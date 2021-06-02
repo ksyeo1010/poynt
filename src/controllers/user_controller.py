@@ -43,12 +43,3 @@ class UserController:
     # @staticmethod
     # def payout_round(ctx, round_title, winning_choice):
 
-    # @staticmethod
-    # def multiplier(ctx, round_title):
-    #     return RoundService.get_total_bets(ctx.guild.id, round_title)
-
-    @staticmethod
-    def multiplier(ctx, round_title):
-        return RoundService.get_round_bets(ctx.guild.id, round_title, 'one')
-        # UserService.increment_bets(ctx.guild.id)
-

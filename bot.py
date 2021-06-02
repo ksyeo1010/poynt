@@ -73,7 +73,6 @@ def main():
         if isinstance(error, commands.MissingPermissions):
             await ctx.send(f"Sorry {ctx.message.author}, you are not an admin!")
 
-
     @bot.command()
     async def bet(ctx, round_title: str, bet_choice: str, bet_amount: int):
         """$bet <round_title> <option_name> <bet_amount>"""
@@ -94,7 +93,7 @@ def main():
     async def multiplier(ctx, round_title: str):
         """Return the multiplier for each option for the round"""
         await ctx.send("This is the current multiplier for each choice!")
-        multiplier_message = UserController.multiplier(ctx, round_title)
+        multiplier_message = RoundController.multiplier(ctx, round_title)
         await ctx.send(multiplier_message)
         pass
 
@@ -104,10 +103,10 @@ def main():
         """$payout <round_title> <winning_choice>"""
         list_of_dict = RoundController.get_options(ctx, round_title)
         total_bets = RoundController.get_round_bets(list_of_dict)
-        winning_option = RoundController.get_winning_option(list_of_dict, winning_choice)
-        option_multiplier = RoundController.get_option_multiplier(winning_option, total_bets)
+        winning_option_total_bets = RoundController.get_winning_option_total_bets(list_of_dict, winning_choice)
+        option_multiplier = RoundController.get_option_multiplier(winning_option_total_bets, total_bets)
+        winning_option = RoundController.get_winning_option(ctx, round_title, winning_choice)
         print(option_multiplier)
-
 
         # multiplier = UserController.multiplier(ctx, round_title)
         # UserController.payout_round(ctx, round_title, winning_choice)

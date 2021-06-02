@@ -36,18 +36,36 @@ class RoundController:
         return total_bets
 
     @staticmethod
-    def get_winning_option(list_of_dict, winning_option):
+    def get_winning_option_total_bets(list_of_dict, winning_option):
         for option in list_of_dict:
             if option["_id"] == winning_option:
                 return option
 
     @staticmethod
     def get_option_multiplier(winning_option_dict, total_bet):
-        return winning_option_dict["total"] / total_bet
+        return round(1 + (winning_option_dict["total"] / total_bet))
 
     @staticmethod
-    def user_payday(multiplier, user):
-        pass
+    def get_winning_option(ctx, round_title, winning_choice):
+        guild_id = ctx.guild.id
+        dict_of_options = RoundService.get_round_bets(guild_id, round_title)
+        for option in dict_of_options:
+            if option["option"] == winning_choice:
+                return option
+
+    # @staticmethod
+    # def user_payout(ctx, winning_option, multiplier):
+    #     guild_id = ctx.guild.id
+    #     for user in winning_option["bets"]:
+    #         username = user["username"]
+    #         amount = user["amount"] * multiplier
+    #         RoundService.payout(guild_id, username, amount)
+
+    # list of dictionary, that has each dictionary contains username and amount
+
+    @staticmethod
+    def multiplier(ctx, round_title):
+        return RoundService.get_total_bets(ctx.guild.id, round_title)
 
     # get mnultiplier
     # get all the bets of chocies
