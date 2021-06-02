@@ -71,7 +71,10 @@ class RoundService:
         pipeline = [
             {'$match': {'title': title}},
             {'$unwind': '$choices'},
-            {'$unwind': '$choices.bets'},
+            {'$unwind': {
+                'path': '$choices.bets',
+                'preserveNullAndEmptyArrays': True
+            }},
             {'$group': {
                 '_id': '$choices.option',
                 'total': {'$sum': '$choices.bets.amount'}
@@ -83,3 +86,21 @@ class RoundService:
 
         return list(res)
 
+    @staticmethod
+    def get_round_bets(guild_id: id, title: str) -> list:
+        """Gets all options and bets of a round.
+
+        :param guild_id: the id to identify db.
+        :param title: the title to identify round
+        :return: a list of dictionaries containing options and bets.
+                 [{option: <option>, bets: [username: <username>, amount: <amount>]}]
+        """
+        round_col = Client().get_collection(guild_id, 'rounds')
+        res = round_col.find_one({
+            'title': title
+        }, {
+            'choices': 1,
+            '_id': 0
+        })
+
+        return res['choices']
