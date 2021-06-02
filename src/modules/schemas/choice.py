@@ -1,15 +1,34 @@
-from mongoengine import *
+from dataclasses import dataclass, field, asdict
+from typing import List
 
+from .common import Common
 from .user import UserBet
 
 
-class Choice(EmbeddedDocument):
-    description = StringField(required=True, unique=True, sparse=True)
-    bets = EmbeddedDocumentListField(UserBet, default=list)
+@dataclass
+class Choice:
+    option: str
+    bets: List[UserBet] = field(default_factory=lambda: [])
 
     @property
-    def total_bet(self) -> int:
-        amount = 0
-        for bet in self.bets:
-            amount += bet.get_amount()
-        return amount
+    def to_dict(self):
+        return asdict(self)
+
+    @staticmethod
+    def get_sub_validator():
+        return {
+            'bsonType': 'array',
+            'uniqueItems': True,
+            'additionalProperties': False,
+            'items': {
+                'bsonType': 'object',
+                'required': ['option'],
+                'properties': {
+                    'option': {
+                        'bsonType': 'string',
+                        'description': 'must be a string and is required'
+                    },
+                    'bets': UserBet.get_sub_validator()
+                }
+            }
+        }

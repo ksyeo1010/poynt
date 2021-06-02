@@ -1,45 +1,71 @@
-from .schemas.guild import Guild
+# from .schemas.guild import Guild
 from .schemas.user import User
+from .schemas.round import Round
+from .schemas.choice import Choice
+from .schemas.user import UserBet
+
+from .client import Client
 
 
 class Service:
     @staticmethod
     def init_guild(guild_id: int):
-        guild = Guild(guild_id=guild_id)
-        guild.save()
+        Client().create_db(guild_id,
+                           users=User.get_validator(),
+                           rounds=Round.get_validator())
 
     @staticmethod
     def add_user(guild_id: int, username: str):
-        guild = Guild.objects.get(guild_id=guild_id)
-        guild.users.create(username=username)
-        guild.save()
+        user = User(username=username)
+
+        col = Client().get_collection(guild_id, 'users')
+        col.insert_one(user.to_dict)
 
     @staticmethod
     def get_user(guild_id: int, username: str) -> User:
-        guild = Guild.objects.get(guild_id=guild_id)
-        user = guild.users.get(username=username)
-        return user
+        col = Client().get_collection(guild_id, 'users')
+        user = col.find_one({'username': username}, {'_id': False})
+        return User(user)
 
     @staticmethod
     def add_round(guild_id: int, title: str):
-        guild = Guild.objects.get(guild_id=guild_id)
-        guild.rounds.create(title=title)
-        guild.save()
+        new_round = Round(title=title)
+
+        col = Client().get_collection(guild_id, 'rounds')
+        col.insert_one(new_round.to_dict)
 
     @staticmethod
-    def add_choice(guild_id: int, title: str, description: str):
-        guild = Guild.objects.get(guild_id=guild_id)
-        selected_round = guild.rounds.get(title=title)
-        selected_round.choices.create(description=description)
-        guild.save()
+    def add_choice(guild_id: int, title: str, option: str):
+        choice = Choice(option=option)
+
+        col = Client().get_collection(guild_id, 'rounds')
+        col.update({
+            'title': title
+        }, {
+            '$push': {
+                'choices': choice.to_dict
+            }
+        })
 
     @staticmethod
-    def add_bet(guild_id: int, title: str, description: str, username: str, amount: int):
-        guild = Guild.objects.get(guild_id=guild_id)
-        user = guild.users.get(username=username)
-        user.points -= amount
+    def add_bet(guild_id: int, title: str, option: str, username: str, amount: int):
+        bet = UserBet(username=username, amount=amount)
 
-        choice = guild.rounds.get(title=title).choices.get(description=description)
-        choice.bets.create(username=username, amount=amount)
+        user_col = Client().get_collection(guild_id, 'users')
+        user_col.update({
+            'username': username
+        }, {
+            '$inc': {
+                'points': -amount
+            }
+        })
 
-        guild.save()
+        round_col = Client().get_collection(guild_id, 'rounds')
+        round_col.update({
+            'title': title,
+            'choices.option': option
+        }, {
+            '$push': {
+                'choices.$.bets': bet.to_dict
+            }
+        })

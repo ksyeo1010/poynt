@@ -2,6 +2,7 @@ from src.modules.service import Service
 
 
 class UserController:
+
     @staticmethod
     def add_users(ctx):
         guild_id = ctx.owner.guild.id

@@ -4,7 +4,7 @@ import logging
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from src.modules import client
+from src.modules.client import Client
 from src.controllers.user_controller import UserController
 
 logger = logging.getLogger('discord')
@@ -24,7 +24,8 @@ bot = commands.Bot(command_prefix='$', intents=intents)
 
 
 def main():
-    client.connect()
+    # init db
+    Client()
 
     @bot.event
     async def on_ready():
