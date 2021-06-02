@@ -40,7 +40,7 @@ class Choice:
                         'description': 'must be a string and is required'
                     },
                     'winner': {
-                        'bsonType': 'boolean',
+                        'bsonType': 'bool',
                         'description': 'must be a boolean and is required'
                     },
                     'bets': UserBet.get_sub_validator()

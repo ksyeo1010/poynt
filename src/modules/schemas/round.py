@@ -42,7 +42,7 @@ class Round:
                             'description': 'must be a string and is required'
                         },
                         'running': {
-                            'bsonType': 'boolean',
+                            'bsonType': 'bool',
                             'description': 'must be a boolean and is required'
                         },
                         'choices': Choice.get_sub_validator()

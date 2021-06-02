@@ -44,20 +44,23 @@ def main():
     @bot.command()
     async def points(ctx):
         """Checks how many points you have right now"""
+        embed = discord.Embed(color=0x00ff00)
+        embed.title = "Points"
         user_points = UserController.get_user_points(ctx)
-        await ctx.send("You currently have " + str(user_points))
+        embed.description = f"You currently have {str(user_points)}"
+        await ctx.send(embed=embed)
 
     @bot.command(name="predict")
     @commands.has_permissions(administrator=True)
     async def predict(ctx, round_title: str, *args):
         """$predict <round_title> <options> ... <options>"""
-        if len(args) > 2:
+        if len(args) > 1:
             RoundController.add_round(ctx, round_title)
             for choice in args:
                 RoundController.add_choice(ctx, round_title, choice)
-            ctx.send(f"Predictions have started!\n"
-                     f"Place your points on either choice by typing "
-                     f"$bet <round_title> <option_name> <bet_amount>: \n")
+            await ctx.send(f"Predictions have started!\n"
+                           f"Place your points on either choice by typing "
+                           f"$bet <round_title> <option_name> <bet_amount>: \n")
             counter = 0
             for choice in args:
                 counter += 1
@@ -74,15 +77,30 @@ def main():
             await ctx.send(f"Sorry {ctx.message.author}, you are not an admin!")
 
     @bot.command()
+    async def endpredict(ctx, round_title):
+        RoundController.change_prediction_status(ctx, round_title, False)
+        await ctx.send("Voting has ended!")
+
+    @bot.command()
+    async def startpredict(ctx, round_title):
+        RoundController.change_prediction_status(ctx, round_title, True)
+        await ctx.send("Voting has started again!")
+
+    @bot.command()
+    async def postprediction(ctx, round_title):
+        result = RoundController.post_predictions(ctx, round_title)
+        await ctx.send(result)
+
+    @bot.command()
     async def bet(ctx, round_title: str, bet_choice: str, bet_amount: int):
         """$bet <round_title> <option_name> <bet_amount>"""
-        UserController.update_user_points(ctx, str(ctx.message.author), bet_amount, True)
-        RoundController.place_user_bet(ctx, round_title, bet_choice, str(ctx.message.author), bet_amount)
-
-    @bet.error
-    async def bet_error(ctx, error):
-        if isinstance(error, commands.CommandInvokeError):
+        if UserController.get_user_points(ctx) < bet_amount:
             await ctx.send("You dont have enough points")
+        if RoundController.is_prediction_running(ctx, round_title):
+            UserController.update_user_points(ctx, str(ctx.message.author), bet_amount, True)
+            RoundController.place_user_bet(ctx, round_title, bet_choice, str(ctx.message.author), bet_amount)
+        else:
+            await ctx.send("The Poll is closed right now!")
 
     @bot.command()
     async def activerounds(ctx):
@@ -109,18 +127,8 @@ def main():
         for winner in winning_option:
             winner = RoundController.apply_multiplier(winner, option_multiplier)
             UserController.update_user_points(ctx, winner["_id"], winner["total"], False)
-            await ctx.send(f"{winner['_id']} has gained {winner['total']}")
+            # await ctx.send(f"{winner['_id']} has gained {winner['total']}")
         await ctx.send("Everything has been allocated!")
-
-        print(option_multiplier)
-
-        # multiplier = UserController.multiplier(ctx, round_title)
-        # UserController.payout_round(ctx, round_title, winning_choice)
-        # winner_list = RoundController.get_winners(ctx, round_title, winning_choice)
-        # await ctx.send(winner_list)
-        # UserController.delete_round(ctx, round_title)
-
-        pass
 
     @payout.error
     async def payout_error(ctx, error):

@@ -23,6 +23,23 @@ class RoundController:
         return f"{counter}: {choice}"
 
     @staticmethod
+    def is_prediction_running(ctx, round_title):
+        guild_id = ctx.guild.id
+        return RoundService.check_round(guild_id, round_title)
+
+    @staticmethod
+    def change_prediction_status(ctx, round_title, is_voting_on):
+        guild_id = ctx.guild.id
+        RoundService.set_round_state(guild_id, round_title, is_voting_on)
+
+    @staticmethod
+    def post_predictions(ctx, round_title):
+        guild_id = ctx.guild.id
+        result = RoundService.get_total_bets(guild_id, round_title)
+        return f"Here are the statistics for the {round_title} Predictions:\n" \
+               f"{result}"
+
+    @staticmethod
     def get_options(ctx, title):
         guild_id = ctx.guild.id
         return RoundService.get_total_bets(guild_id, title)

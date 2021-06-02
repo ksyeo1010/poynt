@@ -28,7 +28,7 @@ class RoundService:
         col = Client().get_collection(guild_id, 'rounds')
         res = col.find_one({'title': title})
 
-        return res.running
+        return res["running"]
 
     @staticmethod
     def set_round_state(guild_id: int, title: str, is_running=False):
@@ -43,7 +43,9 @@ class RoundService:
         col.find_one_and_update({
             'title': title
         }, {
-            'running': is_running
+            '$set': {
+                'running': is_running
+            }
         })
 
     @staticmethod
