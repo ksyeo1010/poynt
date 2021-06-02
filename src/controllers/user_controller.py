@@ -11,7 +11,7 @@ class UserController:
 
     @staticmethod
     def add_new_user(ctx):
-        guild_id = ctx.owner.guild.id
+        guild_id = ctx.guild.id
         UserService.add_user(guild_id, str(ctx))
 
     @staticmethod

@@ -40,6 +40,13 @@ def main():
     @bot.event
     async def on_member_join(member):
         UserController.add_new_user(member)
+        # embed = discord.Embed(color=0x00ff00)
+        # embed.title = f"Welcome {member}!"
+        # embed.description = f"Here's 500 points to start predicting!\n" \
+        #                     f"In order to see my commands, simply type $help to view commands!\n" \
+        #                     f"Keep in mind that you can only check the help commands by DM, but actual commands" \
+        #                     f"need to be made on the server you would like to participate in!"
+        # await member.send(embed=embed)
 
     @bot.command()
     async def points(ctx):
@@ -58,49 +65,82 @@ def main():
             RoundController.add_round(ctx, round_title)
             for choice in args:
                 RoundController.add_choice(ctx, round_title, choice)
-            await ctx.send(f"Predictions have started!\n"
-                           f"Place your points on either choice by typing "
-                           f"$bet <round_title> <option_name> <bet_amount>: \n")
             counter = 0
+            options_list = []
             for choice in args:
                 counter += 1
                 message = RoundController.print_predictions(choice, counter)
-                await ctx.send(message)
+                options_list.append(message)
+            embed = discord.Embed(color=0x00ff00)
+            embed.title = "Predict Round Initiated!"
+            options_string = '\n'.join(options_list)
+            general_message = (f"Predictions have started!\n"
+                               f"Place your points on either choice by typing "
+                               f"$bet <round_title> <option_name> <bet_amount>: \n")
+            embed.description = general_message + options_string
+            await ctx.send(embed=embed)
         else:
-            await ctx.send("You have to put in at least two options")
-            return
+            embed = discord.Embed(color=0xff0000)
+            embed.title = "Prediction Command Error!"
+            embed.description = "You have to put in at least two options"
+            await ctx.send(embed=embed)
 
     @predict.error
     async def predict_error(ctx, error):
-        # move this to a UserController.no_permission_error
         if isinstance(error, commands.MissingPermissions):
-            await ctx.send(f"Sorry {ctx.message.author}, you are not an admin!")
+            embed = discord.Embed(color=0xff0000)
+            embed.title = "Nice Try!"
+            embed.description = f"Sorry {ctx.message.author}, you are not an admin!"
+            await ctx.send(embed=embed)
 
     @bot.command()
     async def endpredict(ctx, round_title):
         RoundController.change_prediction_status(ctx, round_title, False)
-        await ctx.send("Voting has ended!")
+        embed = discord.Embed(color=0xff0000)
+        embed.title = "Betting Status Changed!"
+        embed.description = f"Betting has now concluded for {round_title}.\n" \
+                            f"In order to initiate betting once more, please contact an admin."
+        await ctx.send(embed=embed)
 
     @bot.command()
     async def startpredict(ctx, round_title):
         RoundController.change_prediction_status(ctx, round_title, True)
-        await ctx.send("Voting has started again!")
+        embed = discord.Embed(color=0x00ff00)
+        embed.title = "Betting Status Changed!"
+        embed.description = f"Betting has be initiated for {round_title}.\n" \
+                            f"For more support in placing a bet, type command '$help bet' for more information.\n" \
+                            f"Bet away!"
+        await ctx.send(embed=embed)
 
     @bot.command()
     async def postprediction(ctx, round_title):
         result = RoundController.post_predictions(ctx, round_title)
-        await ctx.send(result)
+        embed = discord.Embed(color=0x00ff00)
+        embed.title = f"{round_title} Status"
+        options_string = '\n'.join(result)
+        embed.description = options_string
+        await ctx.send(embed=embed)
 
     @bot.command()
     async def bet(ctx, round_title: str, bet_choice: str, bet_amount: int):
         """$bet <round_title> <option_name> <bet_amount>"""
         if UserController.get_user_points(ctx) < bet_amount:
-            await ctx.send("You dont have enough points")
+            embed = discord.Embed(color=0xff0000)
+            embed.title = f"Bet Error!"
+            embed.description = "You dont have enough points"
+            await ctx.send(embed=embed)
         if RoundController.is_prediction_running(ctx, round_title):
             UserController.update_user_points(ctx, str(ctx.message.author), bet_amount, True)
             RoundController.place_user_bet(ctx, round_title, bet_choice, str(ctx.message.author), bet_amount)
+            embed = discord.Embed(color=0x00ff00)
+            embed.title = f"Betting Complete!"
+            embed.description = f"You've successfully bet {bet_amount} points to '{bet_choice}'!"
+            await ctx.send(embed=embed)
         else:
-            await ctx.send("The Poll is closed right now!")
+            embed = discord.Embed(color=0xff0000)
+            embed.title = f"Bet Error!"
+            embed.description = "The Poll is closed right now!"
+            await ctx.send(embed=embed)
 
     @bot.command()
     async def activerounds(ctx):
@@ -108,32 +148,39 @@ def main():
         pass
 
     @bot.command()
-    async def multiplier(ctx, round_title: str):
+    async def multiplier(ctx, round_title: str, money: int):
         """Return the multiplier for each option for the round"""
-        await ctx.send("This is the current multiplier for each choice!")
-        multiplier_message = RoundController.multiplier(ctx, round_title)
-        await ctx.send(multiplier_message)
-        pass
+        multiplier_message = RoundController.multiplier_total_pool(ctx, round_title, money)
+        embed = discord.Embed(color=0x00ff00)
+        embed.title = "Potential Bet Returns"
+        options_string = '\n'.join(multiplier_message)
+        embed.description = options_string
+        await ctx.send(embed=embed)
 
     @bot.command(name="payout")
     @commands.has_permissions(administrator=True)
     async def payout(ctx, round_title: str, winning_choice: str):
         """$payout <round_title> <winning_choice>"""
-        list_of_dict = RoundController.get_options(ctx, round_title)
-        total_bets_made = RoundController.get_total_round_bets(list_of_dict)
-        winning_option_total_bets = RoundController.get_winning_option_total_bets(list_of_dict, winning_choice)
-        option_multiplier = RoundController.get_option_multiplier(winning_option_total_bets, total_bets_made)
+        # list_of_dict = RoundController.get_options(ctx, round_title)
+        # total_bets_made = RoundController.get_total_round_bets(list_of_dict)
+        # winning_option_total_bets = RoundController.get_winning_option_total_bets(list_of_dict, winning_choice)
+        option_multiplier = RoundController.get_option_multiplier(ctx, round_title, winning_choice)
         winning_option = RoundController.get_winning_option(ctx, round_title, winning_choice)
         for winner in winning_option:
             winner = RoundController.apply_multiplier(winner, option_multiplier)
             UserController.update_user_points(ctx, winner["_id"], winner["total"], False)
-            # await ctx.send(f"{winner['_id']} has gained {winner['total']}")
-        await ctx.send("Everything has been allocated!")
+        embed = discord.Embed(color=0x00ff00)
+        embed.title = "Prediction Round Over!"
+        embed.description = "Everything has been allocated!"
+        await ctx.send(embed=embed)
 
     @payout.error
     async def payout_error(ctx, error):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.send(f"Sorry {ctx.message.author}, you are not an admin!")
+            embed = discord.Embed(color=0xff0000)
+            embed.title = "Nice Try!"
+            embed.description = f"Sorry {ctx.message.author}, you are not an admin!"
+            await ctx.send(embed=embed)
 
     @bot.command(name="goodbyepoynt")
     @commands.has_permissions(administrator=True)

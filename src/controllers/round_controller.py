@@ -36,31 +36,58 @@ class RoundController:
     def post_predictions(ctx, round_title):
         guild_id = ctx.guild.id
         result = RoundService.get_total_bets(guild_id, round_title)
-        return f"Here are the statistics for the {round_title} Predictions:\n" \
-               f"{result}"
+        pair_list = []
+        for option in result:
+            pair = f"'{option['_id']}' currently has {option['total']} points in the pool!"
+            pair_list.append(pair)
+        return pair_list
+
+    # @staticmethod
+    # def get_options(ctx, title):
+    #     guild_id = ctx.guild.id
+    #     return RoundService.get_total_bets(guild_id, title)
+
+    # @staticmethod
+    # def get_total_round_bets(list_of_dict):
+    #     total_bets = 0
+    #     for option in range(len(list_of_dict)):
+    #         option_bet = list_of_dict[option]["total"]
+    #         total_bets += option_bet
+    #     return total_bets
 
     @staticmethod
-    def get_options(ctx, title):
+    def multiplier_total_pool(ctx, title, money):
         guild_id = ctx.guild.id
-        return RoundService.get_total_bets(guild_id, title)
-
-    @staticmethod
-    def get_total_round_bets(list_of_dict):
+        list_of_options = RoundService.get_total_bets(guild_id, title)
+        list_strings = []
         total_bets = 0
-        for option in range(len(list_of_dict)):
-            option_bet = list_of_dict[option]["total"]
+        for option in list_of_options:
+            option_bet = option["total"]
             total_bets += option_bet
-        return total_bets
+        for option in list_of_options:
+            check_multiplier_option = option["_id"]
+            option_multiplier = round(1 + (((total_bets + money) - (option["total"] + money)) / (total_bets + money)))
+            apply_multiplier = option_multiplier * money
+            list_strings.append(f"If you bet {money} points on '{check_multiplier_option}' right now, you can get "
+                                f"{apply_multiplier} points if you win!")
+        return list_strings
+
+    # @staticmethod
+    # def get_winning_option_total_bets(list_of_dict, winning_option):
+    #     for option in list_of_dict:
+    #         if option["_id"] == winning_option:
+    #             return option
 
     @staticmethod
-    def get_winning_option_total_bets(list_of_dict, winning_option):
-        for option in list_of_dict:
-            if option["_id"] == winning_option:
-                return option
-
-    @staticmethod
-    def get_option_multiplier(winning_option_dict, total_bet):
-        return round(1 + (winning_option_dict["total"] / total_bet))
+    def get_option_multiplier(ctx, round_title, winning_choice):
+        guild_id = ctx.guild.id
+        list_of_options = RoundService.get_total_bets(guild_id, round_title)
+        total_bets = 0
+        for option in list_of_options:
+            option_bet = option["total"]
+            total_bets += option_bet
+        win_option = RoundService.get_round_bets(guild_id, round_title, winning_choice)
+        return round(1 + ((total_bets - win_option[0]["total"]) / total_bets))
 
     @staticmethod
     def get_winning_option(ctx, round_title, winning_choice):
@@ -72,7 +99,3 @@ class RoundController:
     def apply_multiplier(winner, multiplier):
         winner["total"] *= multiplier
         return winner
-
-    @staticmethod
-    def multiplier(ctx, round_title):
-        return RoundService.get_total_bets(ctx.guild.id, round_title)
