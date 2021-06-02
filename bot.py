@@ -76,7 +76,7 @@ def main():
     @bot.command()
     async def bet(ctx, round_title: str, bet_choice: str, bet_amount: int):
         """$bet <round_title> <option_name> <bet_amount>"""
-        UserController.decrement_user_points(ctx, str(ctx.message.author), bet_amount)
+        UserController.update_user_points(ctx, str(ctx.message.author), bet_amount, True)
         RoundController.place_user_bet(ctx, round_title, bet_choice, str(ctx.message.author), bet_amount)
 
     @bet.error
@@ -102,10 +102,16 @@ def main():
     async def payout(ctx, round_title: str, winning_choice: str):
         """$payout <round_title> <winning_choice>"""
         list_of_dict = RoundController.get_options(ctx, round_title)
-        total_bets = RoundController.get_round_bets(list_of_dict)
+        total_bets_made = RoundController.get_total_round_bets(list_of_dict)
         winning_option_total_bets = RoundController.get_winning_option_total_bets(list_of_dict, winning_choice)
-        option_multiplier = RoundController.get_option_multiplier(winning_option_total_bets, total_bets)
+        option_multiplier = RoundController.get_option_multiplier(winning_option_total_bets, total_bets_made)
         winning_option = RoundController.get_winning_option(ctx, round_title, winning_choice)
+        for winner in winning_option:
+            winner = RoundController.apply_multiplier(winner, option_multiplier)
+            UserController.update_user_points(ctx, winner["_id"], winner["total"], False)
+            await ctx.send(f"{winner['_id']} has gained {winner['total']}")
+        await ctx.send("Everything has been allocated!")
+
         print(option_multiplier)
 
         # multiplier = UserController.multiplier(ctx, round_title)

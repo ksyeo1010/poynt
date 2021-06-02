@@ -28,7 +28,7 @@ class RoundController:
         return RoundService.get_total_bets(guild_id, title)
 
     @staticmethod
-    def get_round_bets(list_of_dict):
+    def get_total_round_bets(list_of_dict):
         total_bets = 0
         for option in range(len(list_of_dict)):
             option_bet = list_of_dict[option]["total"]
@@ -48,26 +48,14 @@ class RoundController:
     @staticmethod
     def get_winning_option(ctx, round_title, winning_choice):
         guild_id = ctx.guild.id
-        dict_of_options = RoundService.get_round_bets(guild_id, round_title)
-        for option in dict_of_options:
-            if option["option"] == winning_choice:
-                return option
+        dict_of_options = RoundService.get_round_bets(guild_id, round_title, winning_choice)
+        return dict_of_options
 
-    # @staticmethod
-    # def user_payout(ctx, winning_option, multiplier):
-    #     guild_id = ctx.guild.id
-    #     for user in winning_option["bets"]:
-    #         username = user["username"]
-    #         amount = user["amount"] * multiplier
-    #         RoundService.payout(guild_id, username, amount)
-
-    # list of dictionary, that has each dictionary contains username and amount
+    @staticmethod
+    def apply_multiplier(winner, multiplier):
+        winner["total"] *= multiplier
+        return winner
 
     @staticmethod
     def multiplier(ctx, round_title):
         return RoundService.get_total_bets(ctx.guild.id, round_title)
-
-    # get mnultiplier
-    # get all the bets of chocies
-    # calculate the winning number
-    # calculate the username and add amount
