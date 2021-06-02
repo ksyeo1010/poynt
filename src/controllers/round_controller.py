@@ -40,7 +40,8 @@ class RoundController:
         for option in result:
             pair = f"'{option['_id']}' currently has {option['total']} points in the pool!"
             pair_list.append(pair)
-        return pair_list
+        options_string = '\n'.join(pair_list)
+        return options_string
 
     # @staticmethod
     # def get_options(ctx, title):

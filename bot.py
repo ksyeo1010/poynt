@@ -1,6 +1,7 @@
 import os
 import discord
 import logging
+import asyncio
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -48,6 +49,31 @@ def main():
         #                     f"need to be made on the server you would like to participate in!"
         # await member.send(embed=embed)
 
+    @bot.event
+    async def on_command_error(ctx, error):
+        embed = discord.Embed(color=0xff0000)
+        if isinstance(error, commands.CommandOnCooldown):
+            embed.title = f"Cooldown!"
+            embed.description = f"$postprediction: {error}"
+            await ctx.message.delete()
+            msg = await ctx.send(embed=embed)
+            await asyncio.sleep(2.5)
+            await msg.delete()
+        if isinstance(error, commands.MissingPermissions):
+            embed.title = "Nice Try!"
+            embed.description = f"Sorry {ctx.message.author}, you are not an admin!"
+            await ctx.message.delete()
+            msg = await ctx.send(embed=embed)
+            await asyncio.sleep(2.5)
+            await msg.delete()
+        if isinstance(error, commands.BadArgument):
+            embed.title = f"Command Error!"
+            embed.description = "Please type the correct command"
+            await ctx.message.delete()
+            msg = await ctx.send(embed=embed)
+            await asyncio.sleep(2.5)
+            await msg.delete()
+
     @bot.command()
     async def points(ctx):
         """Checks how many points you have right now"""
@@ -55,7 +81,10 @@ def main():
         embed.title = "Points"
         user_points = UserController.get_user_points(ctx)
         embed.description = f"You currently have {str(user_points)}"
-        await ctx.send(embed=embed)
+        await ctx.message.delete()
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(2.5)
+        await msg.delete()
 
     @bot.command(name="predict")
     @commands.has_permissions(administrator=True)
@@ -78,20 +107,26 @@ def main():
                                f"Place your points on either choice by typing "
                                f"$bet <round_title> <option_name> <bet_amount>: \n")
             embed.description = general_message + options_string
-            await ctx.send(embed=embed)
+            await ctx.message.delete()
+            msg = await ctx.send(embed=embed)
+            await asyncio.sleep(2.5)
+            await msg.delete()
         else:
             embed = discord.Embed(color=0xff0000)
             embed.title = "Prediction Command Error!"
             embed.description = "You have to put in at least two options"
-            await ctx.send(embed=embed)
+            await ctx.message.delete()
+            msg = await ctx.send(embed=embed)
+            await asyncio.sleep(2.5)
+            await msg.delete()
 
-    @predict.error
-    async def predict_error(ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            embed = discord.Embed(color=0xff0000)
-            embed.title = "Nice Try!"
-            embed.description = f"Sorry {ctx.message.author}, you are not an admin!"
-            await ctx.send(embed=embed)
+    # @predict.error
+    # async def predict_error(ctx, error):
+    #     if isinstance(error, commands.MissingPermissions):
+    #         embed = discord.Embed(color=0xff0000)
+    #         embed.title = "Nice Try!"
+    #         embed.description = f"Sorry {ctx.message.author}, you are not an admin!"
+    #         await ctx.send(embed=embed)
 
     @bot.command()
     async def endpredict(ctx, round_title):
@@ -100,7 +135,10 @@ def main():
         embed.title = "Betting Status Changed!"
         embed.description = f"Betting has now concluded for {round_title}.\n" \
                             f"In order to initiate betting once more, please contact an admin."
-        await ctx.send(embed=embed)
+        await ctx.message.delete()
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(2.5)
+        await msg.delete()
 
     @bot.command()
     async def startpredict(ctx, round_title):
@@ -110,16 +148,35 @@ def main():
         embed.description = f"Betting has be initiated for {round_title}.\n" \
                             f"For more support in placing a bet, type command '$help bet' for more information.\n" \
                             f"Bet away!"
-        await ctx.send(embed=embed)
+        await ctx.message.delete()
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(2.5)
+        await msg.delete()
 
-    @bot.command()
+    @bot.command(name="postprediction")
+    @commands.cooldown(1, 15, commands.BucketType.user)
     async def postprediction(ctx, round_title):
         result = RoundController.post_predictions(ctx, round_title)
         embed = discord.Embed(color=0x00ff00)
-        embed.title = f"{round_title} Status"
-        options_string = '\n'.join(result)
-        embed.description = options_string
+        # embed.title = f"{round_title} Status"
+        embed.add_field(name=f"Round: {round_title}", value=result, inline=False)
+        # user = bot.get_user(ctx.author.id)
+        await ctx.message.delete()
         await ctx.send(embed=embed)
+
+        # embed_dict = embed.to_dict()
+        # await msg.delete()
+
+    # @postprediction.error
+    # async def postprediction_error(ctx, error):
+    #     if isinstance(error, commands.CommandOnCooldown):
+    #         embed = discord.Embed(color=0xff0000)
+    #         embed.title = f"Cooldown!"
+    #         embed.description = f"$postprediction: {error}"
+    #         user = bot.get_user(ctx.author.id)
+    #         await ctx.message.delete()
+    #         await user.send(embed=embed)
+
 
     @bot.command()
     async def bet(ctx, round_title: str, bet_choice: str, bet_amount: int):
@@ -128,26 +185,35 @@ def main():
             embed = discord.Embed(color=0xff0000)
             embed.title = f"Bet Error!"
             embed.description = "You dont have enough points"
-            await ctx.send(embed=embed)
+            await ctx.message.delete()
+            msg = await ctx.send(embed=embed)
+            await asyncio.sleep(2.5)
+            await msg.delete()
         if RoundController.is_prediction_running(ctx, round_title):
             UserController.update_user_points(ctx, str(ctx.message.author), bet_amount, True)
             RoundController.place_user_bet(ctx, round_title, bet_choice, str(ctx.message.author), bet_amount)
             embed = discord.Embed(color=0x00ff00)
             embed.title = f"Betting Complete!"
             embed.description = f"You've successfully bet {bet_amount} points to '{bet_choice}'!"
-            await ctx.send(embed=embed)
+            await ctx.message.delete()
+            msg = await ctx.send(embed=embed)
+            await asyncio.sleep(2.5)
+            await msg.delete()
         else:
             embed = discord.Embed(color=0xff0000)
             embed.title = f"Bet Error!"
             embed.description = "The Poll is closed right now!"
-            await ctx.send(embed=embed)
+            await ctx.message.delete()
+            msg = await ctx.send(embed=embed)
+            await asyncio.sleep(2.5)
+            await msg.delete()
 
     @bot.command()
     async def activerounds(ctx):
         # which rounds are active right now
         pass
 
-    @bot.command()
+    @bot.command(name="multiplier")
     async def multiplier(ctx, round_title: str, money: int):
         """Return the multiplier for each option for the round"""
         multiplier_message = RoundController.multiplier_total_pool(ctx, round_title, money)
@@ -155,7 +221,18 @@ def main():
         embed.title = "Potential Bet Returns"
         options_string = '\n'.join(multiplier_message)
         embed.description = options_string
-        await ctx.send(embed=embed)
+        await ctx.message.delete()
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(2.5)
+        await msg.delete()
+
+    # @multiplier.error
+    # async def multiplier_error(ctx, error):
+    #     if isinstance(error, commands.BadArgument):
+    #         embed = discord.Embed(color=0xff0000)
+    #         embed.title = f"Command Error!"
+    #         embed.description = "Please type the correct command"
+    #         await ctx.send(embed=embed)
 
     @bot.command(name="payout")
     @commands.has_permissions(administrator=True)
@@ -172,15 +249,18 @@ def main():
         embed = discord.Embed(color=0x00ff00)
         embed.title = "Prediction Round Over!"
         embed.description = "Everything has been allocated!"
-        await ctx.send(embed=embed)
+        await ctx.message.delete()
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(2.5)
+        await msg.delete()
 
-    @payout.error
-    async def payout_error(ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            embed = discord.Embed(color=0xff0000)
-            embed.title = "Nice Try!"
-            embed.description = f"Sorry {ctx.message.author}, you are not an admin!"
-            await ctx.send(embed=embed)
+    # @payout.error
+    # async def payout_error(ctx, error):
+    #     if isinstance(error, commands.MissingPermissions):
+    #         embed = discord.Embed(color=0xff0000)
+    #         embed.title = "Nice Try!"
+    #         embed.description = f"Sorry {ctx.message.author}, you are not an admin!"
+    #         await ctx.send(embed=embed)
 
     @bot.command(name="goodbyepoynt")
     @commands.has_permissions(administrator=True)
@@ -204,10 +284,10 @@ def main():
         #     await ctx.send(f"That's not a valid input, run the command again!")
         pass
 
-    @goodbyepoynt.error
-    async def goodbyepoynt_error(ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            await ctx.send(f"Sorry {ctx.message.author}, you are not an admin!")
+    # @goodbyepoynt.error
+    # async def goodbyepoynt_error(ctx, error):
+    #     if isinstance(error, commands.MissingPermissions):
+    #         await ctx.send(f"Sorry {ctx.message.author}, you are not an admin!")
 
     @bot.command()
     async def ranking(ctx, category: str):
@@ -259,10 +339,10 @@ def main():
         # await ctx.send(message)
         pass
 
-    @_shopadd.error
-    async def shopadd_error(ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            await ctx.send(f"Sorry {ctx.message.author}, you are not an admin!")
+    # @_shopadd.error
+    # async def shopadd_error(ctx, error):
+    #     if isinstance(error, commands.MissingPermissions):
+    #         await ctx.send(f"Sorry {ctx.message.author}, you are not an admin!")
 
     @bot.command()
     async def add(ctx, left: int, right: int):
