@@ -47,3 +47,15 @@ class Choice:
                 }
             }
         }
+
+
+@dataclass
+class ChoiceTotal:
+    """The ChoiceTotal dataclass representing the total amount in an choice."""
+    option: str
+    total: int
+
+    @property
+    def to_dict(self):
+        """Returns the class as a key-value dictionary."""
+        return asdict(self)

@@ -1,4 +1,4 @@
-from .choice import Choice
+from .choice import Choice, ChoiceTotal
 from .common import Common
 from .round import Round
 from .user import User, UserBet
