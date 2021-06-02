@@ -31,6 +31,17 @@ class RoundService:
         return res["running"]
 
     @staticmethod
+    def delete_round(guild_id: int, title: str):
+        """Delete a round given the title.
+
+        :param guild_id: the guild_id identifier.
+        :param title: he unique title to add to.
+        :return: None.
+        """
+        col = Client().get_collection(guild_id, 'rounds')
+        col.find_one_and_delete({'title': title})
+
+    @staticmethod
     def set_round_state(guild_id: int, title: str, is_running=False):
         """Set the round state to start or stop.
 
