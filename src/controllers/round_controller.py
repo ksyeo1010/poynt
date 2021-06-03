@@ -100,3 +100,8 @@ class RoundController:
     def apply_multiplier(winner, multiplier):
         winner.amount *= multiplier
         return winner
+
+    @staticmethod
+    def delete_round(ctx, round_title):
+        guild_id = ctx.guild.id
+        RoundService.delete_round(guild_id, round_title)
