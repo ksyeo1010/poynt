@@ -80,9 +80,3 @@ class UserBet(EmbeddedDocument):
                 }
             }
         }
-
-
-@dataclass
-class UserCheckin:
-    username: str
-

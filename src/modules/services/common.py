@@ -1,4 +1,4 @@
-from src.modules.schemas import User, Round, Role
+from src.modules.schemas import User, Round, Role, Checkin
 from src.modules.client import Client
 
 
@@ -14,4 +14,5 @@ class CommonService:
         Client().create_db(guild_id,
                            users=User,
                            rounds=Round,
-                           role_shop=Role)
+                           role_shop=Role,
+                           checkin=Checkin)

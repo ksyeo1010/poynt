@@ -1,4 +1,4 @@
-from src.modules.schemas.role_shop import Role
+from src.modules.schemas import Role
 from src.modules.client import Client
 
 
@@ -37,16 +37,16 @@ class RoleShopService:
 
         :param guild_id: the id to identify the db.
         :return: list of roles of roles.
-                 [Role(name, privilege, cost)]
+                 [Role(name, cost)]
         """
         col = Client().get_collection(guild_id, 'role_shop')
         res = col.find({}, {'_id': False}).sort([('cost', -1)])
 
-        return list(map(lambda r: Role(r['name'], r['privilege']), list(res)))
+        return list(map(lambda r: Role(r['name'], r['cost']), list(res)))
 
     @staticmethod
-    def delete_role(guild_id: int, privilege: int):
+    def delete_role(guild_id: int, name: str):
         col = Client().get_collection(guild_id, 'role_shop')
         col.find_one_and_delete({
-            'privilege': privilege
+            'name': name
         })
