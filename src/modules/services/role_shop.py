@@ -20,14 +20,14 @@ class RoleShopService:
 
     @staticmethod
     def get_role(guild_id: int, name: str) -> Role:
-        """Gets a role by its privilege number.
+        """Gets a role by its name.
 
         :param guild_id: the id to identify the db.
         :param name: the name of the role to get.
-        :return: a Role object. Role(name, privilege, cost)
+        :return: a Role object. Role(name, cost)
         """
         col = Client().get_collection(guild_id, 'role_shop')
-        res = col.find_one({'name': name})
+        res = col.find_one({'name': name}, {'_id': False})
 
         return Role(**res)
 

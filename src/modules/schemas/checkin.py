@@ -46,4 +46,4 @@ class Checkin(Document):
     def create_index(cls, collection):
         """Create the indexes for Checkin collection."""
         collection.create_index([('username', 1)], unique=True)
-        collection.create_index('expire_at', expiresAfterSeconds=0)
+        collection.create_index('expire_at', expireAfterSeconds=0)

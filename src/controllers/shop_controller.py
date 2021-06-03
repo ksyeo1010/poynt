@@ -23,7 +23,7 @@ class ShopController:
     @staticmethod
     def get_role_from_name(ctx, role_name):
         guild_id = ctx.guild.id
-        role_object = RoleShopService.get_role_by_privilege(guild_id, role_name)
+        role_object = RoleShopService.get_role(guild_id, role_name)
         return role_object.cost
 
 

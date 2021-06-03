@@ -28,122 +28,16 @@ def main():
     # init db
     Client()
 
-    # class AdminCog(commands.Cog, name='ADMIN'):
-    #     def __init__(self, bot):
-    #         self.bot = bot
-    #
-    #     @commands.command(name='predict',
-    #                       brief='Create a round of predictions.',
-    #                       description='If you would like to close or open betting for the predictions, '
-    #                                   'search for <$help closebets> or <$help openbets>.')
-    #     async def predict(self, ctx):
-    #         await ctx.send('predict')
-    #
-    #     @commands.command(name='closebets',
-    #                       brief='Close betting for prediction round.',
-    #                       description='If you would like to reopen prediction round, search for <$help openbets>. '
-    #                                   'If you would like to end the round, search for <$help payout>.')
-    #     async def closebets(self, ctx):
-    #         await ctx.send('closebets')
-    #
-    #     @commands.command(name='openbets',
-    #                       brief='Open betting for prediction round.',
-    #                       description='If you would like to reclose prediction round, search for <$help closebets>. '
-    #                                   'If you would like to end the round, search for <$help payout>.')
-    #     async def openbets(self, ctx):
-    #         await ctx.send('openbets')
-    #
-    #     @commands.command(name='payout',
-    #                       brief='Conclude the prediction round by paying out users.',
-    #                       description='Allocate winnings to players. '
-    #                                   'Running this will delete the round.')
-    #     async def payout(self, ctx):
-    #         await ctx.send('payout')
-    #
-    #     @commands.command(name='shopadd',
-    #                       brief='Add roles to the shop.',
-    #                       description='Add roles to the shop with the specified name, cost, and role color.')
-    #     async def shopadd(self, ctx):
-    #         await ctx.send('shopadd')
-    #
-    # class GeneralCog(commands.Cog, name='GENERAL'):
-    #     def __init__(self, bot):
-    #         self.bot = bot
-    #
-    #     @commands.command(name='points',
-    #                       brief='Check your points.',
-    #                       description='Check how many points you have right now. '
-    #                                   'You can only use this command every 15 seconds.')
-    #     async def points(self, ctx):
-    #         await ctx.send('points')
-    #
-    #     @commands.command(name='postprediction',
-    #                       brief='Check accumulated bets for options.',
-    #                       description='Check how many points are bet in each option for the prediction round. '
-    #                                   'You can only use this command every 15 seconds.')
-    #     async def postprediction(self, ctx):
-    #         await ctx.send('postprediction')
-    #
-    #     @commands.command(name='bet',
-    #                       brief='Place a bet on an option.',
-    #                       description='Bet on an option for the specified prediction round. '
-    #                                   'You will only be able to place a bet when the betting status is open for the '
-    #                                   'specified prediction round. '
-    #                                   'You will not be able to place more points than what you already have.')
-    #     async def bet(self, ctx):
-    #         await ctx.send('bet')
-    #
-    #     @commands.command(name='activerounds',
-    #                       brief='Check rounds available to bet.',
-    #                       description='Check which prediction rounds are open to vote.')
-    #     async def activerounds(self, ctx):
-    #         await ctx.send('activerounds')
-    #
-    #     @commands.command(name='multiplier',
-    #                       brief='Check multiplier for each option.',
-    #                       description='Check how much you will earn by putting in specified points into each option. '
-    #                                   'You can only use this command every 15 seconds.')
-    #     async def multiplier(self, ctx):
-    #         await ctx.send('multiplier')
-    #
-    #     @commands.command(name='ranking',
-    #                       brief='Check points ranking for top 10 users.',
-    #                       description='Check top 10 player in the guild with the most points. '
-    #                                   'You can only use this command every 15 seconds.')
-    #     async def ranking(self, ctx):
-    #         await ctx.send('ranking')
-    #
-    #     @commands.command(name='shop',
-    #                       brief='Display roles you are able to purchase.',
-    #                       description='Shows all the roles that are available to purchase. '
-    #                                   'If you would like to purchase any of the roles, search for <$help shopbuy>.')
-    #     async def shop(self, ctx):
-    #         await ctx.send('shop')
-    #
-    #     @commands.command(name='shopbuy',
-    #                       brief='Buy role from the shop.',
-    #                       description='The role you purchase will be assigned to you on your discord server. '
-    #                                   'Please refer to the admin to change the display name colour to the specified role. '
-    #                                   'If you would like to view the roles on sale, search for <$help shop>.')
-    #     async def shopbuy(self, ctx):
-    #         await ctx.send('shopbuy')
-    #
-    #     @commands.command(name='checkin',
-    #                       brief='Check-in to receive 100 points.',
-    #                       description='Receive 100 points for checking-in. '
-    #                                   'You will only be able to check-in again after 24 hours.')
-    #     async def checkin(self, ctx):
-    #         await ctx.send('checkin')
-    #
-
+    # Help Command
     @bot.group(invoke_without_command=True)
     async def help(ctx):
-        embed = discord.Embed(title="help",
+        embed = discord.Embed(title="Help",
                               description="Use $help <command> for more details on a command.",
                               color=0x0000ff)
         embed.add_field(name="Admin", value="predict\nclosebets\nopenbets\npayout\nshopadd")
         embed.add_field(name="General", value="points\npostprediction\nbet\nactiverounds\nmultiplier\nranking\nshop\n"
                                               "shopbuy\ncheckin")
+        await ctx.message.delete()
         await ctx.send(embed=embed)
 
     @help.command()
@@ -155,6 +49,7 @@ def main():
                                           "the predictions, search for <$help closebets> or <$help openbets>.",
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$predict <round_title> <option> ... <option>")
+        await ctx.message.delete()
         await ctx.send(embed=embed)
 
     @help.command()
@@ -166,8 +61,8 @@ def main():
                                           "If you would like to end the round, search for <$help payout>",
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$closebets <round_title>")
+        await ctx.message.delete()
         await ctx.send(embed=embed)
-
 
     @help.command()
     async def openbets(ctx):
@@ -177,6 +72,7 @@ def main():
                                           "If you would like to end the round, search for <$help payout>",
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$openbets <round_title>")
+        await ctx.message.delete()
         await ctx.send(embed=embed)
 
     @help.command()
@@ -185,6 +81,7 @@ def main():
                               description="Conclude the prediction round and payout users.",
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$payout <round_title> <winning_option>")
+        await ctx.message.delete()
         await ctx.send(embed=embed)
 
     @help.command()
@@ -193,8 +90,105 @@ def main():
                               description="Add roles to the shop with the specified name, cost, and color.",
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$shopadd <role_name> <role_price> <role_color>")
+        await ctx.message.delete()
         await ctx.send(embed=embed)
 
+    @help.command()
+    async def points(ctx):
+        embed = discord.Embed(title="points",
+                              description="Check how many points you have right now. "
+                                          "You can only use this command every 15 seconds.",
+                              color=0x0000ff)
+        embed.add_field(name="**Syntax**", value="$points")
+        await ctx.message.delete()
+        await ctx.send(embed=embed)
+
+    @help.command()
+    async def postprediction(ctx):
+        embed = discord.Embed(title="postprediction",
+                              description="Check how many points are bet in each option for the prediction round. "
+                                          "You can only use this command every 15 seconds.",
+                              color=0x0000ff)
+        embed.add_field(name="**Syntax**", value="$postprediction <round_title>")
+        await ctx.message.delete()
+        await ctx.send(embed=embed)
+
+    @help.command()
+    async def bet(ctx):
+        embed = discord.Embed(title="bet",
+                              description="Bet on an option for the specified prediction round. "
+                                          "You will only be able to place a bet when the betting status is open "
+                                          "for the specified prediction round. "
+                                          "You will not be able to place more points than what you already have.",
+                              color=0x0000ff)
+        embed.add_field(name="**Syntax**", value="$bet <round_title> <bet_option> <bet_amount>")
+        await ctx.message.delete()
+        await ctx.send(embed=embed)
+
+    @help.command()
+    async def activerounds(ctx):
+        embed = discord.Embed(title="activerounds",
+                              description="Check which prediction rounds are open to bet. "
+                                          "You can only use this command every 15 seconds.",
+                              color=0x0000ff)
+        embed.add_field(name="**Syntax**", value="$activerounds")
+        await ctx.message.delete()
+        await ctx.send(embed=embed)
+
+    @help.command()
+    async def multiplier(ctx):
+        embed = discord.Embed(title="multiplier",
+                              description="Check how much you will earn by putting in specified "
+                                          "points into each option. "
+                                          "You can only use this command every 15 seconds.",
+                              color=0x0000ff)
+        embed.add_field(name="**Syntax**", value="$multiplier <round_title> <amount>")
+        await ctx.message.delete()
+        await ctx.send(embed=embed)
+
+    @help.command()
+    async def ranking(ctx):
+        embed = discord.Embed(title="ranking",
+                              description="Check top 10 player in the guild with the most points. "
+                                          "You can only use this command every 15 seconds.",
+                              color=0x0000ff)
+        embed.add_field(name="**Syntax**", value="$ranking")
+        await ctx.message.delete()
+        await ctx.send(embed=embed)
+
+    @help.command()
+    async def shop(ctx):
+        embed = discord.Embed(title="shop",
+                              description="Shows all the roles that are available to purchase. "
+                                          "You can only use this command every 15 seconds.",
+                              color=0x0000ff)
+        embed.add_field(name="**Syntax**", value="$shop")
+        await ctx.message.delete()
+        await ctx.send(embed=embed)
+
+    @help.command()
+    async def shopbuy(ctx):
+        embed = discord.Embed(title="shopbuy",
+                              description="Buy role from the shop. "
+                                          "The role you purchase will be assigned to you on your discord server. "
+                                          "Please refer to the admin to change the display name colour to "
+                                          "the specified role by moving role-hierarchy in Server Settings.",
+                              color=0x0000ff)
+        embed.add_field(name="**Syntax**", value="$shopbuy <role_name>")
+        await ctx.message.delete()
+        await ctx.send(embed=embed)
+
+    @help.command()
+    async def checkin(ctx):
+        embed = discord.Embed(title="checkin",
+                              description="Receive 100 points for checking-in. "
+                                          "You will only be able to check-in again after 24 hours.",
+                              color=0x0000ff)
+        embed.add_field(name="**Syntax**", value="$checkin")
+        await ctx.message.delete()
+        await ctx.send(embed=embed)
+
+    # Bot Events
     @bot.event
     async def on_ready():
         """Print to console when bot is connected."""
@@ -231,30 +225,31 @@ def main():
             embed.description = f"{error}"
             await ctx.message.delete()
             msg = await ctx.send(embed=embed)
-            await asyncio.sleep(2.5)
+            await asyncio.sleep(4)
             await msg.delete()
         if isinstance(error, commands.MissingPermissions):
             embed.title = "Nice Try!"
             embed.description = f"Sorry {ctx.message.author}, you are not an admin!"
             await ctx.message.delete()
             msg = await ctx.send(embed=embed)
-            await asyncio.sleep(2.5)
+            await asyncio.sleep(4)
             await msg.delete()
         if isinstance(error, commands.BadArgument):
             embed.title = f"Command Error!"
             embed.description = "Please type the correct command"
             await ctx.message.delete()
             msg = await ctx.send(embed=embed)
-            await asyncio.sleep(2.5)
+            await asyncio.sleep(4)
             await msg.delete()
         if isinstance(error, commands.CommandNotFound):
             embed.title = f"Command Error!"
             embed.description = "There's no commanded named that!"
             await ctx.message.delete()
             msg = await ctx.send(embed=embed)
-            await asyncio.sleep(2.5)
+            await asyncio.sleep(4)
             await msg.delete()
 
+    # Bot Commands
     @bot.command()
     @commands.cooldown(1, 15, commands.BucketType.user)
     async def points(ctx):
@@ -381,10 +376,15 @@ def main():
             await msg.delete()
 
     @bot.command()
+    @commands.cooldown(1, 15, commands.BucketType.user)
     async def activerounds(ctx):
         """Check which prediction rounds are open to vote."""
-        # which rounds are active right now
-        pass
+        msg = RoundController.get_active_rounds(ctx)
+        embed = discord.Embed(title="Active Rounds!", description=msg, color=0x00ff00)
+        await ctx.message.delete()
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(7)
+        await msg.delete()
 
     @bot.command(name="multiplier")
     @commands.cooldown(1, 15, commands.BucketType.user)
@@ -459,6 +459,7 @@ def main():
         await msg.delete()
 
     @bot.command()
+    @commands.cooldown(1, 15, commands.BucketType.user)
     async def shop(ctx):
         """Display roles you are able to purchase.
         If you would like to purchase any of the roles, search for <$help shopbuy>."""
@@ -469,7 +470,7 @@ def main():
         embed.description = f"{message}"
         await ctx.message.delete()
         msg = await ctx.send(embed=embed)
-        await asyncio.sleep(15)
+        await asyncio.sleep(10)
         await msg.delete()
 
     @bot.command()
@@ -479,36 +480,34 @@ def main():
         Please refer to the admin to change the display name colour to the specified role.
         If you would like to view the roles on sale, search for <$help shop>."""
         role_cost = ShopController.get_role_from_name(ctx, role_name)
-        # assign user to the role_name
-        # subtract role_name cost from user
         if UserController.get_user_points(ctx) < role_cost:
             embed = discord.Embed(color=0xff0000)
             embed.title = f"Purchase Error!"
             embed.description = "You dont have enough points"
             await ctx.message.delete()
             msg = await ctx.send(embed=embed)
-            await asyncio.sleep(2.5)
+            await asyncio.sleep(4)
             await msg.delete()
         else:
             member = ctx.message.author
-            role = discord.utils.get(member.server.roles, name=role_name)
-            await member.addroles(member, role)
+            role = discord.utils.get(member.guild.roles, name=role_name)
+            await member.add_roles(role)
+            UserController.update_user_points(ctx, str(ctx.message.author), role_cost, True)
             embed = discord.Embed(color=0x00ff00)
             embed.title = "Purchased!"
             embed.description = f"{role_name} was purchased from the shop!" \
                                 f"The role has been assigned to you on the server."
             await ctx.message.delete()
             msg = await ctx.send(embed=embed)
-            await asyncio.sleep(15)
+            await asyncio.sleep(5)
             await msg.delete()
 
     @bot.command(name="shopadd")
     @commands.has_permissions(administrator=True)
     async def shopadd(ctx, role_name, role_cost, role_color):
         """ADMIN COMMAND: Add roles to the shop with the specified name, cost, and role color."""
-        # able to add items to the shop
         role_color = int(role_color, 16)
-        ShopController.add_role(ctx, role_name, role_cost)
+        ShopController.add_role(ctx, role_name, int(role_cost))
         await ctx.guild.create_role(name=role_name, color=role_color)
         embed = discord.Embed(color=0x00ff00)
         embed.title = "New Role!"
@@ -517,27 +516,29 @@ def main():
                             f"Price: {role_cost} Points\n"
         await ctx.message.delete()
         msg = await ctx.send(embed=embed)
-        await asyncio.sleep(15)
+        await asyncio.sleep(10)
         await msg.delete()
 
     @bot.command()
-    @commands.cooldown(1, 86340, commands.BucketType.user)
     async def checkin(ctx):
         """Check-in to receive 100 points.
         You will only be able to check-in again after 24 hours."""
-        UserController.update_user_points(ctx, ctx.message.author, 100, False)
+        try:
+            CommonController.check_in_user(ctx, str(ctx.message.author))
+            msg = f"You have checked in!\n" \
+                  f"We have given you 100 points.\n" \
+                  f"You can check in again after 24 hours!"
+        except Exception:
+            msg = CommonController.check_in_time(ctx, str(ctx.message.author))
+            msg = f"You can check in again in, {msg}"
         embed = discord.Embed(color=0x00ff00)
         embed.title = "Check in!"
-        embed.description = f"You have checked in!\n" \
-                            f"We have given you 100 points.\n" \
-                            f"You can check in again after 24 hours!"
+        embed.description = msg
         await ctx.message.delete()
         msg = await ctx.send(embed=embed)
-        await asyncio.sleep(2)
+        await asyncio.sleep(4)
         await msg.delete()
 
-    # bot.add_cog(AdminCog(bot))
-    # bot.add_cog(GeneralCog(bot))
     bot.run(TOKEN)
 
 

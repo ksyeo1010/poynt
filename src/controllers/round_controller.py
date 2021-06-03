@@ -105,3 +105,19 @@ class RoundController:
     def delete_round(ctx, round_title):
         guild_id = ctx.guild.id
         RoundService.delete_round(guild_id, round_title)
+
+    @staticmethod
+    def get_active_rounds(ctx):
+        guild_id = ctx.guild.id
+        result = RoundService.get_running_rounds(guild_id)
+        result_list = []
+        for round in result:
+            title = round["title"]
+            option_list = []
+            for choice_option in round["choices"]:
+                option = choice_option["option"]
+                option_list.append(option)
+            option_string = ', '.join(option_list)
+            round_with_option = f"Round: {title} - Option: \n{option_string}"
+            result_list.append(round_with_option)
+        return '\n'.join(result_list)
