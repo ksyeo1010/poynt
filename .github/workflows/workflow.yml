@@ -4,29 +4,29 @@ on:
     branches: [ cicd ]
 
 jobs:
-  continuous-integration:
-    runs-on: ubuntu-latest
-    steps:
-      # Step 1
-      - uses: actions/checkout@v2
-      # Step 2
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-      # Step 3
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-      # Step 4
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
+#  continuous-integration:
+#    runs-on: ubuntu-latest
+#    steps:
+#      # Step 1
+#      - uses: actions/checkout@v2
+#      # Step 2
+#      - name: Set up Python 3.9
+#        uses: actions/setup-python@v2
+#        with:
+#          python-version: 3.9
+#      # Step 3
+#      - name: Install dependencies
+#        run: pip install -r requirements.txt
+#      # Step 4
+#      - name: Configure AWS credentials
+#        uses: aws-actions/configure-aws-credentials@v1
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: us-east-2
       # Step 5
-      - name: Build Application and Run unit Test
-        run: python app.py
+#      - name: Build Application and Run unit Test
+#        run: python bot.py
 
   continuous-deployment:
     runs-on: ubuntu-latest
@@ -46,6 +46,6 @@ jobs:
         run: |
           aws deploy create-deployment \
             --application-name poynt \
-            --deployment-group-name AppDeploymentGroupName \
+            --deployment-group-name poynt-dev \
             --deployment-config-name CodeDeployDefault.OneAtATime \
             --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
