@@ -5,7 +5,7 @@ channels:
 dependencies:
   - python=3.9
   - pip
-  - python-dotenv
-  - pymongo
+  - python-dotenv=0.17.1
+  - pymongo=3.11.4
   - pip:
-    - discord
+    - discord=1.0.1
