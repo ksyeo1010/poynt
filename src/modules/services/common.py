@@ -12,6 +12,6 @@ class CommonService:
         :return: None.
         """
         Client().create_db(guild_id,
-                           users=User.get_validator(),
-                           rounds=Round.get_validator(),
-                           role_shop=Role.get_validator())
+                           users=User,
+                           rounds=Round,
+                           role_shop=Role)
