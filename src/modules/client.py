@@ -17,9 +17,8 @@ class Client:
 
     def create_db(self, guild_id: int, **kwargs):
         db = self._client[str(guild_id)]
-        for key, value in kwargs.items():
-            db.create_collection(key, validator=value.schema)
-            db[key].create_index(value.unique_index, unique=True)
+        for key, document in kwargs.items():
+            document.create_collection(db, key)
 
     def get_collection(self, guild_id: int, collection: str):
         return self._client[str(guild_id)][collection]

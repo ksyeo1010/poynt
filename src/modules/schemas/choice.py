@@ -2,10 +2,11 @@ from dataclasses import dataclass, field, asdict
 from typing import List
 
 from .user import UserBet
+from .common import Common, EmbeddedDocument
 
 
 @dataclass
-class Choice:
+class Choice(EmbeddedDocument):
     """The choice dataclass.
 
     option: the option name of choice.
@@ -16,13 +17,8 @@ class Choice:
     winner: bool = field(default=False)
     bets: List[UserBet] = field(default_factory=lambda: [])
 
-    @property
-    def to_dict(self):
-        """Returns the class as a key-value dictionary."""
-        return asdict(self)
-
-    @staticmethod
-    def get_sub_validator():
+    @classmethod
+    def get_sub_validator(cls):
         """ The sub-validator field of the choice embedded document.
 
         :return: a dictionary containing bson properties.
@@ -50,12 +46,7 @@ class Choice:
 
 
 @dataclass
-class ChoiceTotal:
+class ChoiceTotal(Common):
     """The ChoiceTotal dataclass representing the total amount in an choice."""
     option: str
     total: int
-
-    @property
-    def to_dict(self):
-        """Returns the class as a key-value dictionary."""
-        return asdict(self)

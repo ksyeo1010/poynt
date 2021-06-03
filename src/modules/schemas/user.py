@@ -1,62 +1,51 @@
-import pymongo
 from typing import Optional
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 
-from .common import Common
+from .common import Document, EmbeddedDocument
 
 
 @dataclass
-class User:
+class User(Document):
     """The User class in a guild.
 
     :username: a string representing the username of a user.
     :points: an integer representing the total amount of points of a user.
-    :privilege: an integer representing the privilege of a user.
     """
     username: str
     points: Optional[int] = field(default=500)
-    privilege: Optional[int] = field(default=0)
 
-    @property
-    def to_dict(self):
-        """Returns the dataclass as a key-value dictionary."""
-        return asdict(self)
+    @classmethod
+    def create_index(cls, collection):
+        """Create the indexes for User collection."""
+        collection.create_index([('username', 1)], unique=True)
 
-    @staticmethod
-    def get_validator() -> Common:
-        """Represents the unique index of a user document and the schema validator.
+    @classmethod
+    def get_validator(cls) -> dict:
+        """Get the schema validator for a User.
 
         :return: a dictionary containing bson properties.
         """
-        return Common(
-            unique_index=[('username', pymongo.DESCENDING)],
-            schema={
-                '$jsonSchema': {
-                    'bsonType': 'object',
-                    'required': ['username'],
-                    'properties': {
-                        'username': {
-                            'bsonType': 'string',
-                            'description': 'must be a string and is required'
-                        },
-                        'points': {
-                            'bsonType': 'int',
-                            'minimum': 0,
-                            'description': 'must be an integer greater than 0'
-                        },
-                        'privilege': {
-                            'bsonType': 'int',
-                            'minimum': 0,
-                            'description': 'must be an integer greater than 0'
-                        }
+        return {
+            '$jsonSchema': {
+                'bsonType': 'object',
+                'required': ['username'],
+                'properties': {
+                    'username': {
+                        'bsonType': 'string',
+                        'description': 'must be a string and is required'
+                    },
+                    'points': {
+                        'bsonType': 'int',
+                        'minimum': 0,
+                        'description': 'must be an integer greater than 0'
                     }
                 }
             }
-        )
+        }
 
 
 @dataclass
-class UserBet:
+class UserBet(EmbeddedDocument):
     """The user betting class.
 
     :username: a string representing the username of a user.
@@ -65,14 +54,9 @@ class UserBet:
     username: str
     amount: int
 
-    @property
-    def to_dict(self):
-        """Returns the class as a key-value dictionary."""
-        return asdict(self)
-
-    @staticmethod
-    def get_sub_validator() -> dict:
-        """ The sub-validator field of the choice embedded document.
+    @classmethod
+    def get_sub_validator(cls) -> dict:
+        """Get the schema embedded validator for a UserBet.
 
         :return: a dictionary containing bson properties.
         """

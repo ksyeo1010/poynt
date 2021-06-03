@@ -1,8 +1,31 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 
 
 @dataclass
 class Common:
-    """The common schema type used to setup a schema validator."""
-    unique_index: list
-    schema: dict
+    @property
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+
+@dataclass
+class Document(Common):
+    @classmethod
+    def get_validator(cls) -> dict:
+        raise NotImplementedError
+
+    @classmethod
+    def create_index(cls, collection):
+        raise NotImplementedError
+
+    @classmethod
+    def create_collection(cls, db, key):
+        db.create_collection(key, validator=cls.get_validator())
+        cls.create_index(db[key])
+
+
+@dataclass
+class EmbeddedDocument(Common):
+    @classmethod
+    def get_sub_validator(cls) -> dict:
+        raise NotImplementedError

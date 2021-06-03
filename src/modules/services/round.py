@@ -18,6 +18,33 @@ class RoundService:
         col.insert_one(new_round.to_dict)
 
     @staticmethod
+    def get_running_rounds(guild_id: int) -> list:
+        """Get all rounds that are running.
+
+        :param guild_id: the guild_id identifier.
+        :return: a list of dictionaries containing running rounds.
+                [{
+                    title: <title>,
+                    choices: [{
+                        option: <option>
+                    }]
+                }]
+        """
+        pipeline = [
+            {'$match': {'running': True}},
+            {'$project': {
+                'title': 1,
+                'choices.option': 1,
+                '_id': 0
+            }}
+        ]
+
+        col = Client().get_collection(guild_id, 'rounds')
+        res = col.aggregate(pipeline)
+
+        return list(res)
+
+    @staticmethod
     def check_round(guild_id: int, title: str) -> bool:
         """Checks if the round is currently running.
 
