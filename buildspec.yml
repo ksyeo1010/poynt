@@ -3,7 +3,7 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - pip install -r my-api/requirements.txt
+      - echo ${DB_NAME}
   build:
     commands:
       - docker-compose build
