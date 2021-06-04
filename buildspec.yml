@@ -8,7 +8,9 @@ phases:
     commands:
       - docker-compose build
       - echo ${DB_NAME}
+      - pwd
+      - ls
 artifacts:
   files:
     - '**/*'
-  base-directory: poynt
+  base-directory: .
