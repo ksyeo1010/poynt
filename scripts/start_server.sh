@@ -5,6 +5,6 @@ cd /home/ec2-user/poynt
 docker-compose up -d
 
 # run python
-source environment/bin/activate
+source venv/bin/activate
 pkill -f bot.py
 nohup python -u ./bot.py > output.log 2> error.log &

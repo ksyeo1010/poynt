@@ -6,8 +6,8 @@ cd /home/ec2-user/poynt
 sudo cp ~/.env .
 
 # python
-virtualenv environment
-source environment/bin/activate
+python3.9 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 
 # mongodb
