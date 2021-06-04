@@ -3,7 +3,7 @@ cd /home/ec2-user/poynt
 
 # cp env
 rm .env
-sudo cp ~/.env ./.env
+sudo cp ~/.env .
 
 # python
 virtualenv environment
