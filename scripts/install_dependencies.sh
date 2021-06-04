@@ -8,7 +8,7 @@ sudo cp ~/.env .
 # python
 virtualenv environment
 source environment/bin/activate
-sudo pip install -r requirements.txt
+pip install -r requirements.txt
 
 # mongodb
 docker-compose build
