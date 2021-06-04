@@ -6,4 +6,5 @@ docker-compose up -d
 
 # run python
 source environment/bin/activate
-noup python bot.py &
+pkill -f bot.py
+noup python -u ./bot.py > output.log &
