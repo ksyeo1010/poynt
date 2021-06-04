@@ -12,8 +12,7 @@ class Client:
 
     def __init__(self):
         self._client = MongoClient(
-            f'mongodb://{os.getenv("DB_USERNAME")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT")}',
-            authSource='admin'
+            f'mongodb://{os.getenv("DB_USERNAME")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT")}/?authSource=admin',
         )
 
     def create_db(self, guild_id: int, **kwargs):
