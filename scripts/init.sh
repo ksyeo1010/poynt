@@ -17,13 +17,13 @@ cd /opt
 wget https://www.python.org/ftp/python/3.9.4/Python-3.9.4.tgz
 tar xzf Python-3.9.4.tgz
 cd Python-3.9.4
-bash ./configure --enable-optimizations
+./configure --enable-optimizations
 make altinstall
 rm -f /opt/Python-3.9.4.tgz
 python3.9 -m pip3 install virtualenv
 
 # docker
-amazon-linux-extras install docker
+amazon-linux-extras install docker -y
 service docker start
 usermod -a -G docker ec2-user
 
