@@ -2,6 +2,8 @@
 cd /home/ec2-user/poynt
 
 # run mongo container
+mkdir db
+chmod -R 755 db
 docker-compose up -d
 
 # run python
