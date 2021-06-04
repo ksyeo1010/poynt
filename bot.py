@@ -5,6 +5,7 @@ import logging.config
 import asyncio
 from discord.ext import commands
 from dotenv import load_dotenv
+from pymongo import errors
 
 from src.modules.client import Client
 from src.controllers import CommonController, RoundController, UserController, ShopController
@@ -330,32 +331,41 @@ def main():
     async def predict(ctx, round_title: str, *args):
         """ADMIN COMMAND: Create a round of predictions.
         If you would like to close or open betting for the predictions, search for <$help closebets> or <$help openbets>."""
-        if len(args) > 1:
-            RoundController.add_round(ctx, round_title)
-            for choice in args:
-                RoundController.add_choice(ctx, round_title, choice)
-            counter = 0
-            options_list = []
-            for choice in args:
-                counter += 1
-                message = RoundController.print_predictions(choice, counter)
-                options_list.append(message)
-            embed = discord.Embed(color=0x00ff00)
-            embed.title = "Predict Round Initiated!"
-            options_string = '\n'.join(options_list)
-            general_message = (f"Predictions have started for {round_title}!\n"
-                               f"Place your points on either choice by typing "
-                               f"$bet <round_title> <option_name> <bet_amount>: \n")
-            embed.description = general_message + options_string
-            await ctx.message.delete()
-            await ctx.send(embed=embed)
-        else:
+        try:
+            if len(args) > 1:
+                RoundController.add_round(ctx, round_title)
+                for choice in args:
+                    RoundController.add_choice(ctx, round_title, choice)
+                counter = 0
+                options_list = []
+                for choice in args:
+                    counter += 1
+                    message = RoundController.print_predictions(choice, counter)
+                    options_list.append(message)
+                embed = discord.Embed(color=0x00ff00)
+                embed.title = "Predict Round Initiated!"
+                options_string = '\n'.join(options_list)
+                general_message = (f"Predictions have started for {round_title}!\n"
+                                   f"Place your points on either choice by typing "
+                                   f"$bet <round_title> <option_name> <bet_amount>: \n")
+                embed.description = general_message + options_string
+                await ctx.message.delete()
+                await ctx.send(embed=embed)
+            else:
+                embed = discord.Embed(color=0xff0000)
+                embed.title = "Prediction Command Error!"
+                embed.description = "You have to put in at least two options"
+                await ctx.message.delete()
+                msg = await ctx.send(embed=embed)
+                await asyncio.sleep(2.5)
+                await msg.delete()
+        except errors.DuplicateKeyError:
             embed = discord.Embed(color=0xff0000)
             embed.title = "Prediction Command Error!"
-            embed.description = "You have to put in at least two options"
+            embed.description = "There's already a round named that!"
             await ctx.message.delete()
             msg = await ctx.send(embed=embed)
-            await asyncio.sleep(2.5)
+            await asyncio.sleep(4)
             await msg.delete()
 
     @bot.command()
@@ -591,7 +601,7 @@ def main():
                   f"We have given you 100 points.\n" \
                   f"You can check in again after 24 hours!"
             embed = discord.Embed(color=0x00ff00)
-        except Exception:
+        except errors.DuplicateKeyError:
             msg = CommonController.check_in_time(ctx, str(ctx.message.author))
             msg = f"You can check in again in, {msg}"
             embed = discord.Embed(color=0xff0000)
