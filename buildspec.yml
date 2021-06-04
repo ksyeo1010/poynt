@@ -4,12 +4,11 @@ phases:
   pre_build:
     commands:
       - echo ${DB_NAME}
+      - pwd
+      - ls
   build:
     commands:
       - docker-compose build
-      - echo ${DB_NAME}
-      - pwd
-      - ls
 artifacts:
   files:
     - '**/*'
