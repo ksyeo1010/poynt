@@ -7,4 +7,4 @@ docker-compose up -d
 # run python
 source environment/bin/activate
 pkill -f bot.py
-nohup python -u ./bot.py > output.log &
+nohup python -u ./bot.py > output.log 2> error.log &
