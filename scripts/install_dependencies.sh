@@ -2,7 +2,7 @@
 cd /home/ec2-user/poynt
 
 # cp env
-rm .env
+#rm .env
 sudo cp ~/.env .
 
 # python
