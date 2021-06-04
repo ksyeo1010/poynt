@@ -30,9 +30,11 @@ def main():
 
     # Help Command
     @bot.group(invoke_without_command=True)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def help(ctx):
         embed = discord.Embed(title="Help",
-                              description="Use $help <command> for more details on a command.",
+                              description="Use $help <command> for more details on a command. Cooldown for each command "
+                                          "is 10 seconds.",
                               color=0x0000ff)
         embed.add_field(name="Admin", value="predict\nclosebets\nopenbets\npayout\nshopadd")
         embed.add_field(name="General", value="points\npostprediction\nbet\nactiverounds\nmultiplier\nranking\nshop\n"
@@ -41,6 +43,7 @@ def main():
         await ctx.send(embed=embed)
 
     @help.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def predict(ctx):
         embed = discord.Embed(title="predict",
                               description="Create a round of predictions. "
@@ -50,9 +53,12 @@ def main():
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$predict <round_title> <option> ... <option>")
         await ctx.message.delete()
-        await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(10)
+        await msg.delete()
 
     @help.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def closebets(ctx):
         embed = discord.Embed(title="closebets",
                               description="Close betting for the specified prediction round. "
@@ -62,9 +68,12 @@ def main():
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$closebets <round_title>")
         await ctx.message.delete()
-        await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(10)
+        await msg.delete()
 
     @help.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def openbets(ctx):
         embed = discord.Embed(title="openbets",
                               description="Open betting for the specified prediction round. "
@@ -73,27 +82,36 @@ def main():
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$openbets <round_title>")
         await ctx.message.delete()
-        await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(10)
+        await msg.delete()
 
     @help.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def payout(ctx):
         embed = discord.Embed(title="payout",
                               description="Conclude the prediction round and payout users.",
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$payout <round_title> <winning_option>")
         await ctx.message.delete()
-        await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(10)
+        await msg.delete()
 
     @help.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def shopadd(ctx):
         embed = discord.Embed(title="shopadd",
                               description="Add roles to the shop with the specified name, cost, and color.",
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$shopadd <role_name> <role_price> <role_color>")
         await ctx.message.delete()
-        await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(10)
+        await msg.delete()
 
     @help.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def points(ctx):
         embed = discord.Embed(title="points",
                               description="Check how many points you have right now. "
@@ -101,9 +119,12 @@ def main():
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$points")
         await ctx.message.delete()
-        await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(10)
+        await msg.delete()
 
     @help.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def postprediction(ctx):
         embed = discord.Embed(title="postprediction",
                               description="Check how many points are bet in each option for the prediction round. "
@@ -111,9 +132,12 @@ def main():
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$postprediction <round_title>")
         await ctx.message.delete()
-        await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(10)
+        await msg.delete()
 
     @help.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def bet(ctx):
         embed = discord.Embed(title="bet",
                               description="Bet on an option for the specified prediction round. "
@@ -123,9 +147,12 @@ def main():
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$bet <round_title> <bet_option> <bet_amount>")
         await ctx.message.delete()
-        await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(10)
+        await msg.delete()
 
     @help.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def activerounds(ctx):
         embed = discord.Embed(title="activerounds",
                               description="Check which prediction rounds are open to bet. "
@@ -133,9 +160,12 @@ def main():
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$activerounds")
         await ctx.message.delete()
-        await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(10)
+        await msg.delete()
 
     @help.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def multiplier(ctx):
         embed = discord.Embed(title="multiplier",
                               description="Check how much you will earn by putting in specified "
@@ -144,9 +174,12 @@ def main():
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$multiplier <round_title> <amount>")
         await ctx.message.delete()
-        await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(10)
+        await msg.delete()
 
     @help.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def ranking(ctx):
         embed = discord.Embed(title="ranking",
                               description="Check top 10 player in the guild with the most points. "
@@ -154,9 +187,12 @@ def main():
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$ranking")
         await ctx.message.delete()
-        await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(10)
+        await msg.delete()
 
     @help.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def shop(ctx):
         embed = discord.Embed(title="shop",
                               description="Shows all the roles that are available to purchase. "
@@ -164,9 +200,12 @@ def main():
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$shop")
         await ctx.message.delete()
-        await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(10)
+        await msg.delete()
 
     @help.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def shopbuy(ctx):
         embed = discord.Embed(title="shopbuy",
                               description="Buy role from the shop. "
@@ -176,9 +215,12 @@ def main():
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$shopbuy <role_name>")
         await ctx.message.delete()
-        await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(10)
+        await msg.delete()
 
     @help.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def checkin(ctx):
         embed = discord.Embed(title="checkin",
                               description="Receive 100 points for checking-in. "
@@ -186,7 +228,9 @@ def main():
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$checkin")
         await ctx.message.delete()
-        await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(10)
+        await msg.delete()
 
     # Bot Events
     @bot.event
@@ -528,10 +572,11 @@ def main():
             msg = f"You have checked in!\n" \
                   f"We have given you 100 points.\n" \
                   f"You can check in again after 24 hours!"
+            embed = discord.Embed(color=0x00ff00)
         except Exception:
             msg = CommonController.check_in_time(ctx, str(ctx.message.author))
             msg = f"You can check in again in, {msg}"
-        embed = discord.Embed(color=0x00ff00)
+            embed = discord.Embed(color=0xff0000)
         embed.title = "Check in!"
         embed.description = msg
         await ctx.message.delete()

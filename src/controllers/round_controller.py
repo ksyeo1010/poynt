@@ -66,7 +66,7 @@ class RoundController:
             option_bet = option.total
             total_bets += option_bet
         for option in list_of_options:
-            check_multiplier_option = option.username
+            check_multiplier_option = option.option
             option_multiplier = round(1 + (((total_bets + money) - (option.total + money)) / (total_bets + money)))
             apply_multiplier = option_multiplier * money
             list_strings.append(f"If you bet {money} points on '{check_multiplier_option}' right now, you can get "
