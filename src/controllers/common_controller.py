@@ -21,3 +21,8 @@ class CommonController:
         hour, minute = divmod(minute, 60)
         return "%d:%02d:%02d" % (hour, minute, sec)
 
+    @staticmethod
+    def delete_guild_db(ctx):
+        guild_id = ctx.owner.guild.id
+        CommonService.delete_guild(guild_id)
+

@@ -1,6 +1,7 @@
 import os
 import discord
 import logging
+import logging.config
 import asyncio
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -14,12 +15,17 @@ handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w'
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
+# General Logger
+# logging.config.fileConfig('general_log.ini', disable_existing_loggers=False)
+# general_logger = logging.getLogger(__name__)
+
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
 
 intents = discord.Intents.default()
 intents.members = True
+intents.guilds = True
 
 bot = commands.Bot(command_prefix='$', intents=intents, help_command=None)
 
@@ -292,6 +298,10 @@ def main():
             msg = await ctx.send(embed=embed)
             await asyncio.sleep(4)
             await msg.delete()
+
+    @bot.event
+    async def on_guild_remove(ctx):
+        CommonController.delete_guild_db(ctx)
 
     # Bot Commands
     @bot.command()
