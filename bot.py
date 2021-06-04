@@ -586,6 +586,7 @@ def main():
         You will only be able to check-in again after 24 hours."""
         try:
             CommonController.check_in_user(ctx, str(ctx.message.author))
+            UserController.update_user_points(ctx, str(ctx.message.author), 100, False)
             msg = f"You have checked in!\n" \
                   f"We have given you 100 points.\n" \
                   f"You can check in again after 24 hours!"

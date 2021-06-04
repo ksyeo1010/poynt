@@ -24,4 +24,6 @@ class Client:
         return self._client[str(guild_id)][collection]
 
     def delete_db(self, guild_id: int):
+        db = self._client[str(guild_id)]
+        db.drop_collection('checkin')  # hard code, since mongo doesnt drop databases with expire fields.
         self._client.drop_database(str(guild_id))
