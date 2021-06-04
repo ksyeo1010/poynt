@@ -22,3 +22,6 @@ class Client:
 
     def get_collection(self, guild_id: int, collection: str):
         return self._client[str(guild_id)][collection]
+
+    def delete_db(self, guild_id: int):
+        self._client.drop_database(str(guild_id))

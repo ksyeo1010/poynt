@@ -16,3 +16,12 @@ class CommonService:
                            rounds=Round,
                            role_shop=Role,
                            checkin=Checkin)
+
+    @staticmethod
+    def delete_guild(guild_id: int):
+        """Deletes a guid from the database.
+
+        :param guild_id: the guild_id is the name of the db.
+        :return: None.
+        """
+        Client().delete_db(guild_id)
