@@ -1,0 +1,14 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - pip install -r my-api/requirements.txt
+  build:
+    commands:
+      - docker-compose build
+      - echo ${DB_NAME}
+artifacts:
+  files:
+    - '**/*'
+  base-directory: poynt
