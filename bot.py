@@ -298,6 +298,13 @@ def main():
             msg = await ctx.send(embed=embed)
             await asyncio.sleep(4)
             await msg.delete()
+        if isinstance(error, commands.MissingRequiredArgument):
+            embed.title = f"Incorrect Input!"
+            embed.description = "Please search $help <command name> for the correct inputs required."
+            await ctx.message.delete()
+            msg = await ctx.send(embed=embed)
+            await asyncio.sleep(4)
+            await msg.delete()
 
     @bot.event
     async def on_guild_remove(ctx):
