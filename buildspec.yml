@@ -8,6 +8,8 @@ phases:
       - ls
   build:
     commands:
+      - docker info
+      - docker-compose -version
       - docker-compose build
 artifacts:
   files:
