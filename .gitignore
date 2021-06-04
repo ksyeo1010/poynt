@@ -3,3 +3,12 @@
 
 # misc
 .idea
+discord.log
+general_log.log
+general_log.ini
+
+# db
+db
+
+# python
+**__pycache__**
