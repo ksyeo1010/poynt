@@ -54,11 +54,13 @@ def main():
     async def predict(ctx):
         embed = discord.Embed(title="predict",
                               description="Create a round of predictions. "
+                                          "You will have put your round name within quotations, for example, "
+                                          "'Am I cool?'\n"
                                           "You can create as many options as you want, but the minimum is two. "
                                           "If you would like to close or open betting for "
                                           "the predictions, search for <$help closebets> or <$help openbets>.",
                               color=0x0000ff)
-        embed.add_field(name="**Syntax**", value="$predict <round_title> <option> ... <option>")
+        embed.add_field(name="**Syntax**", value="$predict '<round_title>' <option> ... <option>")
         await ctx.message.delete()
         msg = await ctx.send(embed=embed)
         await asyncio.sleep(10)
@@ -97,7 +99,9 @@ def main():
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def payout(ctx):
         embed = discord.Embed(title="payout",
-                              description="Conclude the prediction round and payout users.",
+                              description="Conclude the prediction round and payout users.\n"
+                                          "The round title will need to be in quotation marks, for example, "
+                                          "'Am I cool?'",
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$payout <round_title> <winning_option>")
         await ctx.message.delete()
@@ -109,7 +113,8 @@ def main():
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def shopadd(ctx):
         embed = discord.Embed(title="shopadd",
-                              description="Add roles to the shop with the specified name, cost, and color in hex!",
+                              description="Add roles to the shop with the specified name, cost, and color in hex!\n"
+                                          "For example, $shopadd gambler 10000 00FFFF",
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$shopadd <role_name> <role_price> <role_color>")
         await ctx.message.delete()
@@ -148,11 +153,13 @@ def main():
     async def bet(ctx):
         embed = discord.Embed(title="bet",
                               description="Bet on an option for the specified prediction round. "
+                                          "The round title will need to be in quotation marks, for example, "
+                                          "'Am I cool?'"
                                           "You will only be able to place a bet when the betting status is open "
                                           "for the specified prediction round. "
                                           "You will not be able to place more points than what you already have.",
                               color=0x0000ff)
-        embed.add_field(name="**Syntax**", value="$bet <round_title> <bet_option> <bet_amount>")
+        embed.add_field(name="**Syntax**", value="$bet '<round_title>' <bet_option> <bet_amount>")
         await ctx.message.delete()
         msg = await ctx.send(embed=embed)
         await asyncio.sleep(10)
@@ -177,9 +184,11 @@ def main():
         embed = discord.Embed(title="multiplier",
                               description="Check how much you will earn by putting in specified "
                                           "points into each option. "
+                                          "The round title will need to be in quotation marks, for example, "
+                                          "'Am I cool?'"
                                           "You can only use this command every 15 seconds.",
                               color=0x0000ff)
-        embed.add_field(name="**Syntax**", value="$multiplier <round_title> <amount>")
+        embed.add_field(name="**Syntax**", value="$multiplier '<round_title>' <amount>")
         await ctx.message.delete()
         msg = await ctx.send(embed=embed)
         await asyncio.sleep(10)
@@ -345,7 +354,7 @@ def main():
                 embed = discord.Embed(color=0x00ff00)
                 embed.title = "Predict Round Initiated!"
                 options_string = '\n'.join(options_list)
-                general_message = (f"Predictions have started for {round_title}!\n"
+                general_message = (f"Predictions have started for '{round_title}'\n"
                                    f"Place your points on either choice by typing "
                                    f"$bet <round_title> <option_name> <bet_amount>: \n")
                 embed.description = general_message + options_string
