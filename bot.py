@@ -109,7 +109,7 @@ def main():
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def shopadd(ctx):
         embed = discord.Embed(title="shopadd",
-                              description="Add roles to the shop with the specified name, cost, and color.",
+                              description="Add roles to the shop with the specified name, cost, and color in hex!",
                               color=0x0000ff)
         embed.add_field(name="**Syntax**", value="$shopadd <role_name> <role_price> <role_color>")
         await ctx.message.delete()
