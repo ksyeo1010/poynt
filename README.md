@@ -28,7 +28,7 @@ Create an achievement store with roles that users can buy with earned points.
 
 If `anaconda` is installed:
 
-1. Run `conda env create -f environment.yml` in the root directory. This will install the required libraries and setup and environment.
+1. Run `conda env create -f environment.yml` in the root directory. This will install the required libraries and set up the environment.
 2. Run `source activate poynt` to activate the virtual environment.
 
 If `python 3.9.4` is installed:
@@ -55,6 +55,9 @@ After following through the setup part, run the following:
     - `{discord_guild} has connected to Discord!`
 4. Now add the discord bot application to a server, using the authorization url.
 5. Type `$help` to learn about the commands and play with the bot.
+
+## Link to bot
+[Add bot to your server](https://discord.com/api/oauth2/authorize?client_id=849116691392495677&permissions=8&scope=bot)
 
 ## Contributors
 
